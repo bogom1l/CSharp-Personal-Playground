@@ -12,7 +12,7 @@
                 new Node<int>(21),
                 new Node<int>(14,
                     new Node<int>(23),
-                    new Node<int>(6))
+                    new Node<int>(5))
             );
 
             Tree<int> tree = new Tree<int>();

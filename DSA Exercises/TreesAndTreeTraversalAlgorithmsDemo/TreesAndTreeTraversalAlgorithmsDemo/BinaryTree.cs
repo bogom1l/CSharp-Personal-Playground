@@ -49,5 +49,53 @@
                 InorderRecursive(root.Right);
             }
         }
+
+        public void PrintTree()
+        {
+            Console.WriteLine("\n");
+            PrintTree(Root, "", true);
+        }
+
+        private void PrintTree(Node node, string prefix, bool isLeft)
+        {
+            if (node != null)
+            {
+                Console.Write(prefix);
+                Console.Write(isLeft ? "├──" : "└──");
+                Console.WriteLine(node.Data);
+
+                string newPrefix = prefix + (isLeft ? "│   " : "    ");
+                PrintTree(node.Left, newPrefix, true);
+                PrintTree(node.Right, newPrefix, false);
+            }
+        }
+
+        //---------
+        public Node Search(int searchedValue)
+        {
+            return SearchRecursive(this.Root, searchedValue);
+        }
+
+        // Private recursive search method
+        private Node SearchRecursive(Node root, int searchedValue)
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            if (root.Data == searchedValue)
+            {
+                return root;
+            }
+            else if (root.Data < searchedValue)
+            {
+                return SearchRecursive(root.Right, searchedValue);
+            }
+            else
+            {
+                return SearchRecursive(root.Left, searchedValue);
+            }
+        }
     }
 }

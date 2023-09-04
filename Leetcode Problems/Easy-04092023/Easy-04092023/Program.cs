@@ -1,4 +1,4 @@
-﻿namespace LeetCodeExc
+﻿namespace Easy_04092023
 {
     public class Program
     {
@@ -44,9 +44,7 @@
                 lastWordLastLetterIndex--;
             }
 
-            return lastWordLength;
-
-            //return str.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last().Length;
+            return lastWordLength; // BTW, simplest solution: return str.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last().Length;
         }
 
         private static int MaxProfit(int[] prices)

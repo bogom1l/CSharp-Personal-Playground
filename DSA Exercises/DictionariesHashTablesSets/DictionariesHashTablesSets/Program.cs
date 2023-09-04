@@ -7,6 +7,14 @@
         // Dictionaries, Hash Tables and Sets (2013)
         private static void Main(string[] args)
         {
+            // DictionaryDemo();
+            // HashtableDemo();
+
+            AssociativeArraysExercise();
+        }
+
+        private static void DictionaryDemo()
+        {
             Dictionary<int, int> myDictionary = new();
 
             myDictionary[1] = 111;
@@ -20,7 +28,10 @@
             }
 
             Console.WriteLine("----------");
+        }
 
+        private static void HashtableDemo()
+        {
             Hashtable myHashtable = new();
 
             myHashtable.Add(1, 11);
@@ -38,6 +49,11 @@
             {
                 Console.WriteLine($"{dictionaryEntry.Key} - {dictionaryEntry.Value}");
             }
+        }
+
+        private static void AssociativeArraysExercise()
+        {
+
         }
     }
 }

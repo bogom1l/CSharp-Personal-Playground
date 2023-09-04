@@ -10,7 +10,7 @@
             // DictionaryDemo();
             // HashtableDemo();
 
-            AssociativeArraysExercise();
+            CountOccurrences(new[] { 3, 4, 4, -2.5, 3, 3, 4, 3, -2.5 });
         }
 
         private static void DictionaryDemo()
@@ -51,9 +51,26 @@
             }
         }
 
-        private static void AssociativeArraysExercise()
+        private static void CountOccurrences(double[] array)
         {
+            Dictionary<double, int> myDictionary = new();
 
+            foreach (double value in array)
+            {
+                if (!myDictionary.ContainsKey(value))
+                {
+                    myDictionary[value] = 1;
+                }
+                else
+                {
+                    myDictionary[value]++;
+                }
+            }
+
+            foreach (var kvp in myDictionary)
+            {
+                Console.WriteLine($"{kvp.Key} -> {kvp.Value} times");
+            }
         }
     }
 }

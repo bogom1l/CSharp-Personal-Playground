@@ -2,33 +2,33 @@
 {
     public class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
-            List<int> myList = new List<int> { 1, 4, 64, 234, 63, 34, 6, 31, 300, 96, 9, 32 };
-
+            // FindMaxValueRecursion
+            List<int> myList = new List<int> { 4, 64, 234, 300, 32 };
             int max = FindMaxValueRecursion(myList);
             Console.WriteLine(max);
         }
 
         private static int FindMaxValueRecursion(List<int> myList)
         {
-            if (myList.Count == 0)
-                return -1;
-
-            if (myList.Count == 1)
-                return myList[0];
-
-            int possibleMax1 = myList[0];
-
-            var restOfList = myList.Skip(1).ToList();
-            int maxInRest = FindMaxValueRecursion(restOfList);
-
-            if (possibleMax1 > maxInRest)
+            if (!myList.Any()) // If list is empty
             {
-                return possibleMax1;
+                return -1;
             }
 
-            return maxInRest;
+            if (myList.Count == 1) // If list contains only 1 element
+            {
+                return myList[0];
+            }
+
+            int possibleMax = myList[0];
+
+            List<int> restOfList = myList.Skip(1).ToList();
+
+            int maxInRest = FindMaxValueRecursion(restOfList);
+
+            return Math.Max(possibleMax, maxInRest);
         }
     }
 }

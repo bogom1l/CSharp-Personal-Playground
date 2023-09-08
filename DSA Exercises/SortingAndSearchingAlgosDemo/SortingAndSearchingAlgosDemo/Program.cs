@@ -1,10 +1,10 @@
-﻿namespace SortingAndSearchingAlgosDemo
+﻿namespace SortingAlgorithmsDemo
 {
     public class Program
     {
         private static void Main(string[] args)
         {
-            int[] array = { 5, 9, 1, 24, 99, 13, 6, 8, 7, 10, 88, 63 };
+            int[] array = { 5, 9, 1, 24, 99, 13, 6, 8, 7, 10, 88, 63, 17};
 
             Console.WriteLine("Before sorting:");
             PrintArray(array);

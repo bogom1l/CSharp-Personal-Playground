@@ -1,0 +1,22 @@
+﻿@model System.Collections.IEnumerable
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+
+<div>
+    <p>
+        <h3>Hello, World!</h3>
+    </p>
+    <p>
+        @{
+            foreach (var n in Model)
+            {
+                @n
+                <br />
+            }
+        }
+    </p>
+</div>

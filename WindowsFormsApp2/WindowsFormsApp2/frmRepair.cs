@@ -31,6 +31,21 @@
             {
                 try
                 {
+                    int carId = Convert.ToInt32(txtCarId.Text);
+                    int clientId = Convert.ToInt32(txtClientId.Text);
+
+                    if (!dataAccess.CarExists(carId))
+                    {
+                        MessageBox.Show("The specified CarId does not exist. Please enter a valid CarId.");
+                        return;
+                    }
+
+                    if (!dataAccess.ClientExists(clientId))
+                    {
+                        MessageBox.Show("The specified ClientId does not exist. Please enter a valid ClientId.");
+                        return;
+                    }
+
                     Repair newRepair = new Repair
                     {
                         CarId = Convert.ToInt32(txtCarId.Text),

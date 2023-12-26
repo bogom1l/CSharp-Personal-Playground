@@ -184,6 +184,26 @@
             }
         }
 
+        public bool CarExists(int carId)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT COUNT(*) FROM Car WHERE id = @CarId";
+
+                using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@CarId", carId);
+
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+
+                    return count > 0;
+                }
+            }
+        }
+
+
 
         // --------------Client-------------- 
 
@@ -278,6 +298,25 @@
                     command.Parameters.AddWithValue("@Id", clientId);
 
                     command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public bool ClientExists(int clientId)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT COUNT(*) FROM Client WHERE id = @ClientId";
+
+                using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ClientId", clientId);
+
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+
+                    return count > 0;
                 }
             }
         }
@@ -453,7 +492,6 @@
 
             return result.ToString();
         }
-
 
 
         // Select 3: All unpaid repaired cars

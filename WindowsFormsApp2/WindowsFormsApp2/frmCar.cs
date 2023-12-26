@@ -31,19 +31,26 @@
             }
             else
             {
-                Car newCar = new Car
+                try
                 {
-                    LicensePlate = txtLicensePlate.Text,
-                    Model = txtModel.Text,
-                    Make = txtMake.Text,
-                    Color = txtColor.Text,
-                    Year = Convert.ToInt32(txtYear.Text),
-                    Seats = Convert.ToInt32(txtSeats.Text),
-                    PriceForRepairing = Convert.ToDouble(txtPriceForRepairing.Text)
-                };
+                    Car newCar = new Car
+                    {
+                        LicensePlate = txtLicensePlate.Text,
+                        Model = txtModel.Text,
+                        Make = txtMake.Text,
+                        Color = txtColor.Text,
+                        Year = Convert.ToInt32(txtYear.Text),
+                        Seats = Convert.ToInt32(txtSeats.Text),
+                        PriceForRepairing = Convert.ToDouble(txtPriceForRepairing.Text)
+                    };
 
-                dataAccess.CreateCar(newCar);
-                DisplayAllCars();
+                    dataAccess.CreateCar(newCar);
+                    DisplayAllCars();
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message);
+                }
             }
         }
 
@@ -52,47 +59,54 @@
         {
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                int carId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
-
-                Car carToUpdate = dataAccess.GetAllCars().First(x => x.Id == carId);
-
-                if (txtLicensePlate.Text.Length != 0)
+                try
                 {
-                    carToUpdate.LicensePlate = txtLicensePlate.Text;
-                }
+                    int carId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
 
-                if (txtModel.Text.Length != 0)
+                    Car carToUpdate = dataAccess.GetAllCars().First(x => x.Id == carId);
+
+                    if (txtLicensePlate.Text.Length != 0)
+                    {
+                        carToUpdate.LicensePlate = txtLicensePlate.Text;
+                    }
+
+                    if (txtModel.Text.Length != 0)
+                    {
+                        carToUpdate.Model = txtModel.Text;
+                    }
+
+                    if (txtMake.Text.Length != 0)
+                    {
+                        carToUpdate.Make = txtMake.Text;
+                    }
+
+                    if (txtColor.Text.Length != 0)
+                    {
+                        carToUpdate.Color = txtColor.Text;
+                    }
+
+                    if (txtYear.Text.Length != 0)
+                    {
+                        carToUpdate.Year = Convert.ToInt32(txtYear.Text);
+                    }
+
+                    if (txtSeats.Text.Length != 0)
+                    {
+                        carToUpdate.Seats = Convert.ToInt32(txtSeats.Text);
+                    }
+
+                    if (txtPriceForRepairing.Text.Length != 0)
+                    {
+                        carToUpdate.PriceForRepairing = Convert.ToDouble(txtPriceForRepairing.Text);
+                    }
+
+                    dataAccess.UpdateCar(carToUpdate);
+                    DisplayAllCars();
+                }
+                catch (Exception exc)
                 {
-                    carToUpdate.Model = txtModel.Text;
+                    MessageBox.Show(exc.Message);
                 }
-
-                if (txtMake.Text.Length != 0)
-                {
-                    carToUpdate.Make = txtMake.Text;
-                }
-
-                if (txtColor.Text.Length != 0)
-                {
-                    carToUpdate.Color = txtColor.Text;
-                }
-
-                if (txtYear.Text.Length != 0)
-                {
-                    carToUpdate.Year = Convert.ToInt32(txtYear.Text);
-                }
-
-                if (txtSeats.Text.Length != 0)
-                {
-                    carToUpdate.Seats = Convert.ToInt32(txtSeats.Text);
-                }
-
-                if (txtPriceForRepairing.Text.Length != 0)
-                {
-                    carToUpdate.PriceForRepairing = Convert.ToDouble(txtPriceForRepairing.Text);
-                }
-
-                dataAccess.UpdateCar(carToUpdate);
-                DisplayAllCars();
             }
             else
             {
@@ -105,11 +119,17 @@
         {
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                int carIdToDelete = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
+                DialogResult result = MessageBox.Show("Are you sure you want to delete this car?", "Confirm",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                dataAccess.DeleteCar(carIdToDelete);
+                if (result == DialogResult.Yes)
+                {
+                    int carIdToDelete = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
 
-                DisplayAllCars();
+                    dataAccess.DeleteCar(carIdToDelete);
+
+                    DisplayAllCars();
+                }
             }
             else
             {

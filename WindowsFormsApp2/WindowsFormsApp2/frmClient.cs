@@ -29,17 +29,24 @@
             }
             else
             {
-                Client newClient = new Client
+                try
                 {
-                    Name = txtName.Text,
-                    NumberOfPersonalID = Convert.ToInt32(txtNumberOfPersId.Text),
-                    City = txtCity.Text,
-                    Address = txtAddress.Text,
-                    Phone = txtPhone.Text
-                };
+                    Client newClient = new Client
+                    {
+                        Name = txtName.Text,
+                        NumberOfPersonalID = Convert.ToInt32(txtNumberOfPersId.Text),
+                        City = txtCity.Text,
+                        Address = txtAddress.Text,
+                        Phone = txtPhone.Text
+                    };
 
-                dataAccess.CreateClient(newClient);
-                DisplayAllClients();
+                    dataAccess.CreateClient(newClient);
+                    DisplayAllClients();
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message);
+                }
             }
         }
 
@@ -48,38 +55,44 @@
         {
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                int clientId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
-
-                Client clientToUpdate = dataAccess.GetAllClients().First(x => x.Id == clientId);
-
-                if (txtName.Text.Length != 0)
+                try
                 {
-                    clientToUpdate.Name = txtName.Text;
-                }
+                    int clientId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
 
-                if (txtNumberOfPersId.Text.Length != 0)
+                    Client clientToUpdate = dataAccess.GetAllClients().First(x => x.Id == clientId);
+
+                    if (txtName.Text.Length != 0)
+                    {
+                        clientToUpdate.Name = txtName.Text;
+                    }
+
+                    if (txtNumberOfPersId.Text.Length != 0)
+                    {
+                        clientToUpdate.NumberOfPersonalID = Convert.ToInt32(txtNumberOfPersId.Text);
+                    }
+
+                    if (txtCity.Text.Length != 0)
+                    {
+                        clientToUpdate.City = txtCity.Text;
+                    }
+
+                    if (txtAddress.Text.Length != 0)
+                    {
+                        clientToUpdate.Address = txtAddress.Text;
+                    }
+
+                    if (txtPhone.Text.Length != 0)
+                    {
+                        clientToUpdate.Phone = txtPhone.Text;
+                    }
+
+                    dataAccess.UpdateClient(clientToUpdate);
+                    DisplayAllClients();
+                }
+                catch (Exception exc)
                 {
-                    clientToUpdate.NumberOfPersonalID = Convert.ToInt32(txtNumberOfPersId.Text);
+                    MessageBox.Show(exc.Message);
                 }
-
-                if (txtCity.Text.Length != 0)
-                {
-                    clientToUpdate.City = txtCity.Text;
-                }
-
-                if (txtAddress.Text.Length != 0)
-                {
-                    clientToUpdate.Address = txtAddress.Text;
-                }
-
-                if (txtPhone.Text.Length != 0)
-                {
-                    clientToUpdate.Phone = txtPhone.Text;
-                }
-
-
-                dataAccess.UpdateClient(clientToUpdate);
-                DisplayAllClients();
             }
             else
             {
@@ -92,11 +105,17 @@
         {
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                int clientIdToDelete = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
+                DialogResult result = MessageBox.Show("Are you sure you want to delete this client?", "Confirm",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                dataAccess.DeleteClient(clientIdToDelete);
+                if (result == DialogResult.Yes)
+                {
+                    int clientIdToDelete = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
 
-                DisplayAllClients();
+                    dataAccess.DeleteClient(clientIdToDelete);
+
+                    DisplayAllClients();
+                }
             }
             else
             {

@@ -2,16 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Data;
-    using System.Drawing;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using System.Windows.Forms;
-    using System.Xml.Linq;
-    using WindowsFormsApp2.Database;
-    using WindowsFormsApp2.Entities;
+    using Database;
+    using Entities;
 
     public partial class frmRepair : Form
     {
@@ -35,18 +29,25 @@
             }
             else
             {
-                Repair newRepair = new Repair
+                try
                 {
-                    CarId =  Convert.ToInt32(txtCarId.Text),
-                    ClientId =  Convert.ToInt32(txtClientId.Text),
-                    DateOfStartingRepair = txtStartDate.Text,
-                    DateOfFinishingRepair = txtEndDate.Text,
-                    IsPaid = checkBoxIsPaid.Checked,
-                    IsReturned = checkBoxIsReturned.Checked
-                };
+                    Repair newRepair = new Repair
+                    {
+                        CarId = Convert.ToInt32(txtCarId.Text),
+                        ClientId = Convert.ToInt32(txtClientId.Text),
+                        DateOfStartingRepair = txtStartDate.Text,
+                        DateOfFinishingRepair = txtEndDate.Text,
+                        IsPaid = checkBoxIsPaid.Checked,
+                        IsReturned = checkBoxIsReturned.Checked
+                    };
 
-                dataAccess.CreateRepair(newRepair);
-                DisplayAllRepairs();
+                    dataAccess.CreateRepair(newRepair);
+                    DisplayAllRepairs();
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message);
+                }
             }
         }
 
@@ -55,35 +56,42 @@
         {
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                int repairId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
-
-                Repair repairToUpdate = dataAccess.GetAllRepairs().First(x => x.Id == repairId);
-
-                if (txtCarId.Text.Length != 0)
+                try
                 {
-                    repairToUpdate.CarId = Convert.ToInt32(txtCarId.Text);
-                }
+                    int repairId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
 
-                if (txtClientId.Text.Length != 0)
+                    Repair repairToUpdate = dataAccess.GetAllRepairs().First(x => x.Id == repairId);
+
+                    if (txtCarId.Text.Length != 0)
+                    {
+                        repairToUpdate.CarId = Convert.ToInt32(txtCarId.Text);
+                    }
+
+                    if (txtClientId.Text.Length != 0)
+                    {
+                        repairToUpdate.ClientId = Convert.ToInt32(txtClientId.Text);
+                    }
+
+                    if (txtStartDate.Text.Length != 0)
+                    {
+                        repairToUpdate.DateOfStartingRepair = txtStartDate.Text;
+                    }
+
+                    if (txtEndDate.Text.Length != 0)
+                    {
+                        repairToUpdate.DateOfFinishingRepair = txtEndDate.Text;
+                    }
+
+                    repairToUpdate.IsPaid = checkBoxIsPaid.Checked;
+                    repairToUpdate.IsReturned = checkBoxIsReturned.Checked;
+
+                    dataAccess.UpdateRepair(repairToUpdate);
+                    DisplayAllRepairs();
+                }
+                catch (Exception exc)
                 {
-                    repairToUpdate.ClientId = Convert.ToInt32(txtClientId.Text);
+                    MessageBox.Show(exc.Message);
                 }
-
-                if (txtStartDate.Text.Length != 0)
-                {
-                    repairToUpdate.DateOfStartingRepair = txtStartDate.Text;
-                }
-
-                if (txtEndDate.Text.Length != 0)
-                {
-                    repairToUpdate.DateOfFinishingRepair = txtEndDate.Text;
-                }
-
-                repairToUpdate.IsPaid = checkBoxIsPaid.Checked;
-                repairToUpdate.IsReturned = checkBoxIsReturned.Checked;
-
-                dataAccess.UpdateRepair(repairToUpdate);
-                DisplayAllRepairs();
             }
             else
             {
@@ -94,14 +102,19 @@
         // Delete
         private void button3_Click(object sender, EventArgs e)
         {
-            
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                int repairIdToDelete = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
+                DialogResult result = MessageBox.Show("Are you sure you want to delete this repair?", "Confirm",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                dataAccess.DeleteRepair(repairIdToDelete);
+                if (result == DialogResult.Yes)
+                {
+                    int repairIdToDelete = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["Id"].Value);
 
-                DisplayAllRepairs();
+                    dataAccess.DeleteRepair(repairIdToDelete);
+
+                    DisplayAllRepairs();
+                }
             }
             else
             {
@@ -121,13 +134,12 @@
             checkBoxIsReturned.Checked = false;
         }
 
-       
+
         // Display all repairs
         private void DisplayAllRepairs()
         {
             List<Repair> allRepairs = dataAccess.GetAllRepairs();
             dataGridView1.DataSource = allRepairs;
         }
-
     }
 }

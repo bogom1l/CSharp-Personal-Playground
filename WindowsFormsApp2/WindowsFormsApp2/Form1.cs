@@ -37,12 +37,12 @@
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            textBoxResults.Text = dataAccess.GetClientsLeftCarsForRepairLast24Hours();
+            textBoxResults.Text = dataAccess.GetAllClientsWithCarsForRepairLast24Hours();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            textBoxResults.Text = dataAccess.GetMinMaxPriceForRepairByCarMake();
+            textBoxResults.Text = dataAccess.GetOverallMinMaxPriceForRepair();
         }
 
         private void button5_Click(object sender, EventArgs e)

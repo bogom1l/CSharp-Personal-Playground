@@ -390,7 +390,45 @@
 
 
         // Select 1: All clients who left their cars for repair in the last 24 hours, ordered by car make and ascending car license plate
-        public string GetClientsLeftCarsForRepairLast24Hours()
+        public string GetAllClientsWithCarsForRepairLast24Hours()
+        {
+            StringBuilder result = new StringBuilder();
+            result.AppendLine(
+                $"All clients who left their cars for repair in the last 24 hours, ordered by car make and ascending car license plate: {Environment.NewLine}");
+
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+            SELECT C.name AS ClientName, R.dateOfStartingRepair, R.dateOfFinishingRepair, Ca.make AS CarMake, Ca.licensePlate AS CarLicensePlate
+            FROM Client C
+            JOIN Repair R ON C.id = R.clientId
+            JOIN Car Ca ON R.carId = Ca.id
+            WHERE R.dateOfStartingRepair >= datetime('now', '-1 day')
+            ORDER BY Ca.make, Ca.licensePlate ASC;";
+
+                using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        result.AppendLine(
+                            $"Client Name: {reader["ClientName"]}, " +
+                            $"Start Date: {reader["dateOfStartingRepair"]}, " +
+                            $"End Date: {reader["dateOfFinishingRepair"]}, " +
+                            $"Car Make: {reader["CarMake"]}, " +
+                            $"Car License Plate: {reader["CarLicensePlate"]}");
+                    }
+                }
+            }
+
+            return result.ToString();
+        }
+
+
+        // Select 2: Minimal and maximal repair price
+        public string GetOverallMinMaxPriceForRepair()
         {
             StringBuilder result = new StringBuilder();
 
@@ -399,23 +437,16 @@
                 connection.Open();
 
                 string query = @"
-                SELECT C.name, R.dateOfStartingRepair, R.dateOfFinishingRepair, Ca.make, Ca.licensePlate
-                FROM Client C
-                JOIN Repair R ON C.id = R.clientId
-                JOIN Car Ca ON R.carId = Ca.id
-                WHERE datetime('now', '-1 day') <= datetime(R.dateOfStartingRepair)
-                ORDER BY Ca.make, Ca.licensePlate ASC;";
+            SELECT MIN(priceForRepairing) AS MinimalPrice, MAX(priceForRepairing) AS MaximalPrice
+            FROM Car;";
 
                 using (SQLiteCommand command = new SQLiteCommand(query, connection))
                 using (SQLiteDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        result.AppendLine($"Client Name: {reader["name"]}, " +
-                                          $"Start Date: {reader["dateOfStartingRepair"]}, " +
-                                          $"End Date: {reader["dateOfFinishingRepair"]}, " +
-                                          $"Car Make: {reader["make"]}, " +
-                                          $"Car License Plate: {reader["licensePlate"]}");
+                        result.AppendLine($"Overall Minimal Price: {reader["MinimalPrice"]}, {Environment.NewLine}" +
+                                          $"Overall Maximal Price: {reader["MaximalPrice"]}");
                     }
                 }
             }
@@ -423,40 +454,13 @@
             return result.ToString();
         }
 
-        // Select 2: Minimal and maximal price for repair, ordered by car make
-        public string GetMinMaxPriceForRepairByCarMake()
-        {
-            StringBuilder result = new StringBuilder();
 
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = @"
-                SELECT make, MIN(priceForRepairing) AS minimalPrice, MAX(priceForRepairing) AS maximalPrice
-                FROM Car
-                GROUP BY make
-                ORDER BY make;";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                using (SQLiteDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        result.AppendLine($"Car Make: {reader["make"]}, " +
-                                          $"Minimal Price: {reader["minimalPrice"]}, " +
-                                          $"Maximal Price: {reader["maximalPrice"]}");
-                    }
-                }
-            }
-
-            return result.ToString();
-        }
 
         // Select 3: All unpaid repaired cars
         public string GetUnpaidRepairedCars()
         {
             StringBuilder result = new StringBuilder();
+            result.AppendLine($"All unpaid repaired cars: {Environment.NewLine}");
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
@@ -476,7 +480,7 @@
                         result.AppendLine($"Car Id: {reader["id"]}, " +
                                           $"License Plate: {reader["licensePlate"]}, " +
                                           $"Model: {reader["model"]}, " +
-                                          // Add other properties as needed
+                                          $"Make: {reader["make"]}, " +
                                           $"IsPaid: {reader["isPaid"]}");
                     }
                 }
@@ -489,6 +493,7 @@
         public string GetPaidRepairedCars()
         {
             StringBuilder result = new StringBuilder();
+            result.AppendLine($"All paid repaired cars: {Environment.NewLine}");
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
@@ -508,7 +513,7 @@
                         result.AppendLine($"Car Id: {reader["id"]}, " +
                                           $"License Plate: {reader["licensePlate"]}, " +
                                           $"Model: {reader["model"]}, " +
-                                          // Add other properties as needed
+                                          $"Make: {reader["make"]}, " +
                                           $"IsPaid: {reader["isPaid"]}");
                     }
                 }
@@ -521,6 +526,7 @@
         public string GetTop3MostFrequentlyRepairedCars()
         {
             StringBuilder result = new StringBuilder();
+            result.AppendLine($"Top 3 most frequently repaired cars: {Environment.NewLine}");
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
@@ -542,7 +548,7 @@
                         result.AppendLine($"Car Id: {reader["id"]}, " +
                                           $"License Plate: {reader["licensePlate"]}, " +
                                           $"Model: {reader["model"]}, " +
-                                          // Add other properties as needed
+                                          $"Make: {reader["make"]}, " +
                                           $"Repair Count: {reader["repairCount"]}");
                     }
                 }
@@ -555,13 +561,14 @@
         public string GetTop1ClientSpentMostMoneyOnRepairs()
         {
             StringBuilder result = new StringBuilder();
+            result.AppendLine($"Top 1 client who spent the most money on repairing cars: {Environment.NewLine}");
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
                 string query = @"
-                SELECT C.name, SUM(Ca.priceForRepairing) AS totalSpent
+                SELECT C.name, C.phone, SUM(Ca.priceForRepairing) AS totalSpent
                 FROM Client C
                 JOIN Repair R ON C.id = R.clientId
                 JOIN Car Ca ON R.carId = Ca.id
@@ -575,7 +582,7 @@
                     while (reader.Read())
                     {
                         result.AppendLine($"Client Name: {reader["name"]}, " +
-                                          // Add other properties as needed
+                                          $"Phone: {reader["phone"]}, " +
                                           $"Total Spent: {reader["totalSpent"]}");
                     }
                 }

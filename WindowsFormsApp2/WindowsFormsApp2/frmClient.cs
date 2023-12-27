@@ -133,7 +133,7 @@
             txtPhone.Text = "";
         }
 
-        // Display all cars
+        // Display all clients
         private void DisplayAllClients()
         {
             List<Client> allClients = dataAccess.GetAllClients();

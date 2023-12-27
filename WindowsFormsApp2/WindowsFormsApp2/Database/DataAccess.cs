@@ -11,6 +11,7 @@
         private readonly string connectionString =
             "Data Source=D:\\DEVELOPER PROJECTS\\VS Projects\\Databases\\Database.db;Version=3;";
 
+        // -------------- Creating the tables --------------
         public void CreateCarTable()
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
@@ -80,7 +81,7 @@
             }
         }
 
-        // --------------Car--------------  
+        // -------------- Car --------------  
 
         public List<Car> GetAllCars()
         {
@@ -204,8 +205,7 @@
         }
 
 
-
-        // --------------Client-------------- 
+        // -------------- Client -------------- 
 
         public List<Client> GetAllClients()
         {
@@ -322,7 +322,7 @@
         }
 
 
-        // --------------Repair-------------- 
+        // -------------- Repair -------------- 
 
         public List<Repair> GetAllRepairs()
         {
@@ -425,7 +425,7 @@
         }
 
 
-        // ------- Selects --------
+        // ------- Queries --------
 
 
         // Select 1: All clients who left their cars for repair in the last 24 hours, ordered by car make and ascending car license plate
@@ -440,12 +440,12 @@
                 connection.Open();
 
                 string query = @"
-            SELECT C.name AS ClientName, R.dateOfStartingRepair, R.dateOfFinishingRepair, Ca.make AS CarMake, Ca.licensePlate AS CarLicensePlate
-            FROM Client C
-            JOIN Repair R ON C.id = R.clientId
-            JOIN Car Ca ON R.carId = Ca.id
-            WHERE R.dateOfStartingRepair >= datetime('now', '-1 day')
-            ORDER BY Ca.make, Ca.licensePlate ASC;";
+                    SELECT C.name AS ClientName, R.dateOfStartingRepair, R.dateOfFinishingRepair, Ca.make AS CarMake, Ca.licensePlate AS CarLicensePlate
+                    FROM Client C
+                    JOIN Repair R ON C.id = R.clientId
+                    JOIN Car Ca ON R.carId = Ca.id
+                    WHERE R.dateOfStartingRepair >= datetime('now', '-1 day')
+                    ORDER BY Ca.make, Ca.licensePlate ASC;";
 
                 using (SQLiteCommand command = new SQLiteCommand(query, connection))
                 using (SQLiteDataReader reader = command.ExecuteReader())
@@ -465,7 +465,6 @@
             return result.ToString();
         }
 
-
         // Select 2: Minimal and maximal repair price
         public string GetOverallMinMaxPriceForRepair()
         {
@@ -476,8 +475,8 @@
                 connection.Open();
 
                 string query = @"
-            SELECT MIN(priceForRepairing) AS MinimalPrice, MAX(priceForRepairing) AS MaximalPrice
-            FROM Car;";
+                SELECT MIN(priceForRepairing) AS MinimalPrice, MAX(priceForRepairing) AS MaximalPrice
+                FROM Car;";
 
                 using (SQLiteCommand command = new SQLiteCommand(query, connection))
                 using (SQLiteDataReader reader = command.ExecuteReader())
@@ -492,7 +491,6 @@
 
             return result.ToString();
         }
-
 
         // Select 3: All unpaid repaired cars
         public string GetUnpaidRepairedCars()

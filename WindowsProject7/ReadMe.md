@@ -1,1 +1,1 @@
-PC Configurator - small project (Windows Desktop Application)
+PC Configurator - small project (Windows Desktop Application) (C++)

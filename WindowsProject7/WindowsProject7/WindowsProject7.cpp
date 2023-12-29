@@ -14,7 +14,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult;
+HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult, checkboxBluetooth, checkboxInsurance, editCustomMessage;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -207,6 +207,11 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             SendMessage(comboRAM, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(ram));
         }
 
+        checkboxBluetooth = GetDlgItem(hDlg, IDC_CHECK_BLUETOOTH);
+        checkboxInsurance = GetDlgItem(hDlg, IDC_CHECK_INSURANCE);
+
+        editCustomMessage = GetDlgItem(hDlg, IDC_EDIT_CUSTOMMESSAGE);
+
         buttonCalculate = GetDlgItem(hDlg, IDC_BUTTON_CALCULATE);   // Button for calculation
 
         staticResult = GetDlgItem(hDlg, IDC_STATIC_RESULT); // Static text for displaying the result
@@ -231,6 +236,15 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
 
             // Calculate total price
             double totalPrice = cpuPrice + gpuPrice + ramPrice;
+
+             // Adjust total price if Bluetooth checkbox is checked
+            if (SendMessage(checkboxBluetooth, BM_GETCHECK, 0, 0) == BST_CHECKED) {
+                totalPrice += 50.0;
+            }
+            // Adjust total price if Insurance checkbox is checked
+            if (SendMessage(checkboxInsurance, BM_GETCHECK, 0, 0) == BST_CHECKED) {
+                totalPrice += 60.0;
+            }
 
             // Display the total price in the static text control
             wchar_t resultText[256];

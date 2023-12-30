@@ -128,11 +128,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Part.h" />
+    <ClInclude Include="PartType.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WindowsProject7.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Part.cpp" />
+    <ClCompile Include="PartType.cpp" />
     <ClCompile Include="WindowsProject7.cpp" />
   </ItemGroup>
   <ItemGroup>

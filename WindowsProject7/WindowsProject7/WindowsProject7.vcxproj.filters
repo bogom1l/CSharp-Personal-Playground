@@ -27,9 +27,21 @@
     <ClInclude Include="WindowsProject7.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Part.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PartType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowsProject7.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Part.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PartType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

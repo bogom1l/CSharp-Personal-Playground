@@ -7,6 +7,7 @@
 #include "framework.h"
 #include "WindowsProject7.h"
 #include <unordered_map>
+#include "Part.h"  // Include the Part class definition
 
 #define MAX_LOADSTRING 100
 
@@ -157,31 +158,66 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-using PartPriceMap = std::unordered_map<std::wstring, double>;
+// Create instances of the Part class for each part
+Part intel_i5(L"Intel i5", 200.0, PartType::CPU);
+Part amd_ryzen_7(L"AMD Ryzen 7", 250.0, PartType::CPU);
+Part intel_i9(L"Intel i9", 400.0, PartType::CPU);
+Part amd_ryzen_9(L"AMD Ryzen 9", 450.0, PartType::CPU);
+Part nvidia_rtx3060(L"NVIDIA RTX 3060", 300.0, PartType::GPU);
+Part nvidia_rtx3070(L"NVIDIA RTX 3070", 450.0, PartType::GPU);
+Part nvidia_rtx3080(L"NVIDIA RTX 3080", 600.0, PartType::GPU);
+Part amd_rx6700xt(L"AMD Radeon RX 6700 XT", 400.0, PartType::GPU);
+Part amd_rx6800xt(L"AMD Radeon RX 6800 XT", 550.0, PartType::GPU);
+Part amd_rx6900xt(L"AMD Radeon RX 6900 XT", 700.0, PartType::GPU);
+Part ram_16gb_ddr4(L"16GB DDR4", 80.0, PartType::RAM);
+Part ram_32gb_ddr4(L"32GB DDR4", 150.0, PartType::RAM);
+Part ram_64gb_ddr4(L"64GB DDR4", 280.0, PartType::RAM);
 
-double GetPartPrice(const std::wstring& selectedPart, const PartPriceMap& partPrices) {
-    auto it = partPrices.find(selectedPart);
-    if (it != partPrices.end()) {
-        return it->second;
+std::vector<Part> parts = {
+    intel_i5, amd_ryzen_7, intel_i9, amd_ryzen_9,
+    nvidia_rtx3060, nvidia_rtx3070, nvidia_rtx3080, amd_rx6700xt, amd_rx6800xt, amd_rx6900xt,
+    ram_16gb_ddr4, ram_32gb_ddr4, ram_64gb_ddr4
+};
+
+std::vector<Part> cpuParts;
+std::vector<Part> gpuParts;
+std::vector<Part> ramParts;
+
+void sortPartsInDifferentArrays(){
+    // Populate the lists during initialization
+    for(const auto& part : parts) {
+        switch (part.GetPartType()) {
+            case PartType::CPU:
+                cpuParts.push_back(part);
+                break;
+            case PartType::GPU:
+                gpuParts.push_back(part);
+                break;
+            case PartType::RAM:
+                ramParts.push_back(part);
+                break;
+        }
     }
-    return 0.0;  // Default to 0 if part is not found
 }
 
-PartPriceMap partPrices = {
-    { L"Intel i5", 200.0 },
-    { L"AMD Ryzen 7", 250.0 },
-    { L"Intel i9", 400.0 },
-    { L"AMD Ryzen 9", 450.0 },
-    { L"NVIDIA RTX 3060", 300.0 },
-    { L"NVIDIA RTX 3070", 450.0 },
-    { L"NVIDIA RTX 3080", 600.0 },
-    { L"AMD Radeon RX 6700 XT", 400.0 },
-    { L"AMD Radeon RX 6800 XT", 550.0 },
-    { L"AMD Radeon RX 6900 XT", 700.0 },
-    { L"16GB DDR4", 80.0 },
-    { L"32GB DDR4", 150.0 },
-    { L"64GB DDR4", 280.0 },
-};
+//using PartPriceMap = std::unordered_map<std::wstring, double>;
+//
+//PartPriceMap partPrices = {
+//    { intel_i5.GetName(), intel_i5.GetPrice() },
+//    { amd_ryzen_7.GetName(), amd_ryzen_7.GetPrice() },
+//    { intel_i9.GetName(), intel_i9.GetPrice() },
+//    { amd_ryzen_9.GetName(), amd_ryzen_9.GetPrice() },
+//    { nvidia_rtx3060.GetName(), nvidia_rtx3060.GetPrice() },
+//    { nvidia_rtx3070.GetName(), nvidia_rtx3070.GetPrice() },
+//    { nvidia_rtx3080.GetName(), nvidia_rtx3080.GetPrice() },
+//    { amd_rx6700xt.GetName(), amd_rx6700xt.GetPrice() },
+//    { amd_rx6800xt.GetName(), amd_rx6800xt.GetPrice() },
+//    { amd_rx6900xt.GetName(), amd_rx6900xt.GetPrice() },
+//    { ram_16gb_ddr4.GetName(), ram_16gb_ddr4.GetPrice() },
+//    { ram_32gb_ddr4.GetName(), ram_32gb_ddr4.GetPrice() },
+//    { ram_64gb_ddr4.GetName(), ram_64gb_ddr4.GetPrice() },
+//  
+//};
 
 INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -195,51 +231,77 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
         comboRAM = GetDlgItem(hDlg, IDC_COMBO_RAM);
 
          // Populate combo boxes with example options
-        for (const wchar_t* cpu : { L"Intel i5", L"AMD Ryzen 7", L"Intel i9" }) {
-            SendMessage(comboCPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(cpu));
+        
+        for (const auto& part : parts) {
+            std::wstring itemText = part.GetName() + L" - $" + std::to_wstring(part.GetPrice());
+
+            // Add the string to the respective combo box based on part type
+            switch (part.GetPartType()) {
+                case PartType::CPU:
+                    SendMessage(comboCPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                    break;
+                case PartType::GPU:
+                    SendMessage(comboGPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                    break;
+                case PartType::RAM:
+                    SendMessage(comboRAM, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                    break;
+                // Add similar cases for other part types
+                }
         }
 
-        for (const wchar_t* gpu : { L"NVIDIA RTX 3060", L"AMD Radeon RX 6700 XT", L"NVIDIA RTX 3080" }) {
-            SendMessage(comboGPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(gpu));
-        }
-
-        for (const wchar_t* ram : { L"16GB DDR4", L"32GB DDR4", L"64GB DDR4" }) {
-            SendMessage(comboRAM, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(ram));
-        }
 
         checkboxBluetooth = GetDlgItem(hDlg, IDC_CHECK_BLUETOOTH);
         checkboxInsurance = GetDlgItem(hDlg, IDC_CHECK_INSURANCE);
-
         editCustomMessage = GetDlgItem(hDlg, IDC_EDIT_CUSTOMMESSAGE);
-
         buttonCalculate = GetDlgItem(hDlg, IDC_BUTTON_CALCULATE);   // Button for calculation
-
         staticResult = GetDlgItem(hDlg, IDC_STATIC_RESULT); // Static text for displaying the result
-
         buttonReset = GetDlgItem(hDlg, IDC_BUTTON_RESET);
 
         break;
+
     case WM_COMMAND:
 
-        if (LOWORD(wParam) == IDC_BUTTON_CALCULATE) {
-            // Handle the Calculate button click
-            // MessageBox(hDlg, L"Calculating total price...", L"Calculate", MB_OK | MB_ICONINFORMATION);
+         if (LOWORD(wParam) == IDC_BUTTON_CALCULATE) {
+            // Get the selected options from combo boxes
+            int indexCPU = SendMessage(comboCPU, CB_GETCURSEL, 0, 0);
+            int indexGPU = SendMessage(comboGPU, CB_GETCURSEL, 0, 0);
+            int indexRAM = SendMessage(comboRAM, CB_GETCURSEL, 0, 0);
 
-             // Get the selected options from combo boxes
-            wchar_t selectedCPU[256], selectedGPU[256], selectedRAM[256];
-            SendMessage(comboCPU, CB_GETLBTEXT, SendMessage(comboCPU, CB_GETCURSEL, 0, 0), reinterpret_cast<LPARAM>(selectedCPU));
-            SendMessage(comboGPU, CB_GETLBTEXT, SendMessage(comboGPU, CB_GETCURSEL, 0, 0), reinterpret_cast<LPARAM>(selectedGPU));
-            SendMessage(comboRAM, CB_GETLBTEXT, SendMessage(comboRAM, CB_GETCURSEL, 0, 0), reinterpret_cast<LPARAM>(selectedRAM));
+            double cpuPrice = 0;
+            double gpuPrice = 0;
+            double ramPrice = 0;
 
-            // Look up prices based on selected options
-            double cpuPrice = GetPartPrice(selectedCPU, partPrices);
-            double gpuPrice = GetPartPrice(selectedGPU, partPrices);
-            double ramPrice = GetPartPrice(selectedRAM, partPrices);
+            // Check if any selection is not made
+            /*if (indexCPU != CB_ERR && indexCPU < parts.size()) {
+                cpuPrice = parts[indexCPU].GetPrice();
+            } */       
+            if (indexCPU != CB_ERR) {
+                int filteredIndexCPU = -1;
+                int count = 0;
+
+                // Find the selected CPU in the parts vector
+                for (const auto& part : parts) {
+                    if (part.GetPartType() == PartType::CPU) {
+                        if (count == indexCPU) {
+                            cpuPrice = part.GetPrice();
+                            break;
+                        }
+                        count++;
+                    }
+                }
+            }
+            if (indexGPU != CB_ERR && indexGPU < parts.size()) {
+                gpuPrice = parts[indexGPU].GetPrice();
+            }
+            if (indexRAM != CB_ERR && indexRAM < parts.size()) {
+                ramPrice = parts[indexRAM].GetPrice();
+            }
 
             // Calculate total price
             double totalPrice = cpuPrice + gpuPrice + ramPrice;
 
-             // Adjust total price if Bluetooth checkbox is checked
+            // Adjust total price if Bluetooth checkbox is checked
             if (SendMessage(checkboxBluetooth, BM_GETCHECK, 0, 0) == BST_CHECKED) {
                 totalPrice += 50.0;
             }
@@ -252,9 +314,9 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             wchar_t resultText[256];
             swprintf_s(resultText, L"Total Price: $%.2f", totalPrice);
             SetWindowText(staticResult, resultText);
+         }
 
-
-        } else if (LOWORD(wParam) == IDCANCEL) {
+      else if (LOWORD(wParam) == IDCANCEL) {
             // Handle the Close button
             EndDialog(hDlg, IDCANCEL);
         } else if (LOWORD(wParam) == IDC_BUTTON_RESET) {

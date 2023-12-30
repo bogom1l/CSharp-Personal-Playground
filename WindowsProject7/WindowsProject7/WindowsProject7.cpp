@@ -14,7 +14,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult, checkboxBluetooth, checkboxInsurance, editCustomMessage;
+HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult, checkboxBluetooth, checkboxInsurance, editCustomMessage, buttonReset;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -215,8 +215,10 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
         buttonCalculate = GetDlgItem(hDlg, IDC_BUTTON_CALCULATE);   // Button for calculation
 
         staticResult = GetDlgItem(hDlg, IDC_STATIC_RESULT); // Static text for displaying the result
-        break;
 
+        buttonReset = GetDlgItem(hDlg, IDC_BUTTON_RESET);
+
+        break;
     case WM_COMMAND:
 
         if (LOWORD(wParam) == IDC_BUTTON_CALCULATE) {
@@ -255,7 +257,16 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
         } else if (LOWORD(wParam) == IDCANCEL) {
             // Handle the Close button
             EndDialog(hDlg, IDCANCEL);
-        }
+        } else if (LOWORD(wParam) == IDC_BUTTON_RESET) {
+        // Handle the Reset button click
+        SendMessage(comboCPU, CB_SETCURSEL, -1, 0);  // Clear CPU selection
+        SendMessage(comboGPU, CB_SETCURSEL, -1, 0);  // Clear GPU selection
+        SendMessage(comboRAM, CB_SETCURSEL, -1, 0);  // Clear RAM selection
+        SendMessage(checkboxBluetooth, BM_SETCHECK, BST_UNCHECKED, 0);  // Uncheck Bluetooth
+        SendMessage(checkboxInsurance, BM_SETCHECK, BST_UNCHECKED, 0);  // Uncheck Insurance
+        SetWindowText(editCustomMessage, L"");  // Clear custom message
+        SetWindowText(staticResult, L"Total Price: $0.00");  // Reset total price display
+    }
         break;
     }
 

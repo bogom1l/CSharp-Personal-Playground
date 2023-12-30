@@ -1,6 +1,5 @@
 // WindowsProject7.cpp : Defines the entry point for the application.
 //
-
 #include <windows.h>
 #include <CommCtrl.h>
 #include <string>
@@ -45,7 +44,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWSPROJECT7));
 
     MSG msg;
-
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
@@ -125,7 +123,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
+
             EndPaint(hWnd, &ps);
         }
         break;
@@ -158,7 +156,6 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-// Create instances of the Part class for each part
 Part intel_i5(L"Intel i5", 200.0, PartType::CPU);
 Part amd_ryzen_7(L"AMD Ryzen 7", 250.0, PartType::CPU);
 Part intel_i9(L"Intel i9", 400.0, PartType::CPU);
@@ -183,42 +180,6 @@ std::vector<Part> cpuParts;
 std::vector<Part> gpuParts;
 std::vector<Part> ramParts;
 
-void sortPartsInDifferentArrays(){
-    // Populate the lists during initialization
-    for(const auto& part : parts) {
-        switch (part.GetPartType()) {
-            case PartType::CPU:
-                cpuParts.push_back(part);
-                break;
-            case PartType::GPU:
-                gpuParts.push_back(part);
-                break;
-            case PartType::RAM:
-                ramParts.push_back(part);
-                break;
-        }
-    }
-}
-
-//using PartPriceMap = std::unordered_map<std::wstring, double>;
-//
-//PartPriceMap partPrices = {
-//    { intel_i5.GetName(), intel_i5.GetPrice() },
-//    { amd_ryzen_7.GetName(), amd_ryzen_7.GetPrice() },
-//    { intel_i9.GetName(), intel_i9.GetPrice() },
-//    { amd_ryzen_9.GetName(), amd_ryzen_9.GetPrice() },
-//    { nvidia_rtx3060.GetName(), nvidia_rtx3060.GetPrice() },
-//    { nvidia_rtx3070.GetName(), nvidia_rtx3070.GetPrice() },
-//    { nvidia_rtx3080.GetName(), nvidia_rtx3080.GetPrice() },
-//    { amd_rx6700xt.GetName(), amd_rx6700xt.GetPrice() },
-//    { amd_rx6800xt.GetName(), amd_rx6800xt.GetPrice() },
-//    { amd_rx6900xt.GetName(), amd_rx6900xt.GetPrice() },
-//    { ram_16gb_ddr4.GetName(), ram_16gb_ddr4.GetPrice() },
-//    { ram_32gb_ddr4.GetName(), ram_32gb_ddr4.GetPrice() },
-//    { ram_64gb_ddr4.GetName(), ram_64gb_ddr4.GetPrice() },
-//  
-//};
-
 INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
@@ -226,36 +187,39 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
     {
     case WM_INITDIALOG:
         // Combo boxes for CPU, GPU, and RAM
-        comboCPU = GetDlgItem(hDlg, IDC_COMBO_CPU);
-        comboGPU = GetDlgItem(hDlg, IDC_COMBO_GPU);
-        comboRAM = GetDlgItem(hDlg, IDC_COMBO_RAM);
+        comboCPU = GetDlgItem(hDlg, IDC_COMBO_CPU); // Slojil sum Sort=False
+        comboGPU = GetDlgItem(hDlg, IDC_COMBO_GPU); // Slojil sum Sort=False
+        comboRAM = GetDlgItem(hDlg, IDC_COMBO_RAM); // Slojil sum Sort=False
 
-         // Populate combo boxes with example options
-        
+        // Populate combo boxes with example options
         for (const auto& part : parts) {
             std::wstring itemText = part.GetName() + L" - $" + std::to_wstring(part.GetPrice());
 
             // Add the string to the respective combo box based on part type
             switch (part.GetPartType()) {
                 case PartType::CPU:
+                    cpuParts.push_back(part); // Add the part in its PartType Vector
                     SendMessage(comboCPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
                     break;
                 case PartType::GPU:
+                    gpuParts.push_back(part); // Add the part in its PartType Vector
                     SendMessage(comboGPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
                     break;
                 case PartType::RAM:
+                    ramParts.push_back(part); // Add the part in its PartType Vector
                     SendMessage(comboRAM, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
                     break;
                 // Add similar cases for other part types
-                }
+
+            }
         }
 
 
         checkboxBluetooth = GetDlgItem(hDlg, IDC_CHECK_BLUETOOTH);
         checkboxInsurance = GetDlgItem(hDlg, IDC_CHECK_INSURANCE);
         editCustomMessage = GetDlgItem(hDlg, IDC_EDIT_CUSTOMMESSAGE);
-        buttonCalculate = GetDlgItem(hDlg, IDC_BUTTON_CALCULATE);   // Button for calculation
-        staticResult = GetDlgItem(hDlg, IDC_STATIC_RESULT); // Static text for displaying the result
+        buttonCalculate = GetDlgItem(hDlg, IDC_BUTTON_CALCULATE);
+        staticResult = GetDlgItem(hDlg, IDC_STATIC_RESULT);
         buttonReset = GetDlgItem(hDlg, IDC_BUTTON_RESET);
 
         break;
@@ -273,32 +237,17 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             double ramPrice = 0;
 
             // Check if any selection is not made
-            /*if (indexCPU != CB_ERR && indexCPU < parts.size()) {
-                cpuPrice = parts[indexCPU].GetPrice();
-            } */       
-            if (indexCPU != CB_ERR) {
-                int filteredIndexCPU = -1;
-                int count = 0;
-
-                // Find the selected CPU in the parts vector
-                for (const auto& part : parts) {
-                    if (part.GetPartType() == PartType::CPU) {
-                        if (count == indexCPU) {
-                            cpuPrice = part.GetPrice();
-                            break;
-                        }
-                        count++;
-                    }
-                }
-            }
+            if (indexCPU != CB_ERR && indexCPU < parts.size()) {
+                cpuPrice = cpuParts[indexCPU].GetPrice();
+            }        
+            
             if (indexGPU != CB_ERR && indexGPU < parts.size()) {
-                gpuPrice = parts[indexGPU].GetPrice();
+                gpuPrice = gpuParts[indexGPU].GetPrice();
             }
             if (indexRAM != CB_ERR && indexRAM < parts.size()) {
-                ramPrice = parts[indexRAM].GetPrice();
+                ramPrice = ramParts[indexRAM].GetPrice();
             }
 
-            // Calculate total price
             double totalPrice = cpuPrice + gpuPrice + ramPrice;
 
             // Adjust total price if Bluetooth checkbox is checked
@@ -316,19 +265,25 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             SetWindowText(staticResult, resultText);
          }
 
-      else if (LOWORD(wParam) == IDCANCEL) {
-            // Handle the Close button
+
+
+
+
+        else if (LOWORD(wParam) == IDCANCEL) { // Handle the Close button
             EndDialog(hDlg, IDCANCEL);
-        } else if (LOWORD(wParam) == IDC_BUTTON_RESET) {
-        // Handle the Reset button click
-        SendMessage(comboCPU, CB_SETCURSEL, -1, 0);  // Clear CPU selection
-        SendMessage(comboGPU, CB_SETCURSEL, -1, 0);  // Clear GPU selection
-        SendMessage(comboRAM, CB_SETCURSEL, -1, 0);  // Clear RAM selection
-        SendMessage(checkboxBluetooth, BM_SETCHECK, BST_UNCHECKED, 0);  // Uncheck Bluetooth
-        SendMessage(checkboxInsurance, BM_SETCHECK, BST_UNCHECKED, 0);  // Uncheck Insurance
-        SetWindowText(editCustomMessage, L"");  // Clear custom message
-        SetWindowText(staticResult, L"Total Price: $0.00");  // Reset total price display
-    }
+        } 
+      
+        else if (LOWORD(wParam) == IDC_BUTTON_RESET) { // Handle the Reset button click
+            SendMessage(comboCPU, CB_SETCURSEL, -1, 0);  // Clear CPU selection
+            SendMessage(comboGPU, CB_SETCURSEL, -1, 0);  // Clear GPU selection
+            SendMessage(comboRAM, CB_SETCURSEL, -1, 0);  // Clear RAM selection
+            SendMessage(checkboxBluetooth, BM_SETCHECK, BST_UNCHECKED, 0);  // Uncheck Bluetooth
+            SendMessage(checkboxInsurance, BM_SETCHECK, BST_UNCHECKED, 0);  // Uncheck Insurance
+            SetWindowText(editCustomMessage, L"");  // Clear custom message
+            SetWindowText(staticResult, L"Total Price: $0.00");  // Reset total price display
+
+        }
+
         break;
     }
 

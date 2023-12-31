@@ -405,6 +405,11 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
                 AddComponentToListBox(listBoxSelected, L"Other", L"Insurance", 60.0);
             }
 
+            if (totalPrice == 0)
+            {
+                MessageBox(hDlg, L"Please select at least one component.", L"Error", MB_OK | MB_ICONWARNING);
+            }
+
             // Display the total price in the static text control
             wchar_t resultText[256];
             swprintf_s(resultText, L"Total Price: $%.2f", totalPrice);
@@ -412,11 +417,9 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
          }
 
         else if (LOWORD(wParam) == IDCANCEL) { // Handle the Close button
-            EndDialog(hDlg, IDCANCEL);
-        } 
-
-        else if (LOWORD(wParam) == IDOK) { // Handle the OK button
-            EndDialog(hDlg, IDCANCEL);
+             if (MessageBox(hDlg, L"Are you sure you want to exit?", L"Confirmation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+                EndDialog(hDlg, IDCANCEL);
+            }
         } 
       
         else if (LOWORD(wParam) == IDC_BUTTON_RESET) { // Handle the Reset button click

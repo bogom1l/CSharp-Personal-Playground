@@ -25,7 +25,7 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
-void AddComponentToListBox(HWND listBox, const std::wstring& category, const std::wstring& componentName);
+void AddComponentToListBox(HWND listBox, const std::wstring& category, const std::wstring& componentName, double price);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -250,7 +250,6 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
         comboOS = GetDlgItem(hDlg, IDC_COMBO_OS);
         listBoxSelected = GetDlgItem(hDlg, IDC_LIST1);
 
-
         // Populate combo boxes with example options
         for (const auto& part : parts) {
             std::wstringstream ss;
@@ -260,9 +259,9 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             // Ensure exactly 2 digits after the dot
             size_t dotPos = priceText.find(L'.');
             if (dotPos != std::wstring::npos && priceText.length() > dotPos + 2) {
-                priceText = priceText.substr(0, dotPos + 3);  // Keep only two digits after the dot
+                priceText = priceText.substr(0, dotPos + 3);
             } else {
-                priceText += L".00";  // Add ".00" if there are less than 2 digits after the dot
+                priceText += L".00";
             }
 
             std::wstring itemText = part.GetName() + L" - $" + priceText;
@@ -314,7 +313,6 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             }
         }
 
-
         checkboxBluetooth = GetDlgItem(hDlg, IDC_CHECK_BLUETOOTH);
         checkboxInsurance = GetDlgItem(hDlg, IDC_CHECK_INSURANCE);
         editCustomMessage = GetDlgItem(hDlg, IDC_EDIT_CUSTOMMESSAGE);
@@ -353,66 +351,62 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             double casePrice = 0;
             double osPrice = 0;
 
-            // Check if any selection is not made
+            // if any selection is made
             if (indexCPU != CB_ERR && indexCPU < parts.size()) {
                 cpuPrice = cpuParts[indexCPU].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"CPU", cpuParts[indexCPU].GetName());
+                AddComponentToListBox(listBoxSelected, L"CPU", cpuParts[indexCPU].GetName(), cpuParts[indexCPU].GetPrice());
             }        
             if (indexGPU != CB_ERR && indexGPU < parts.size()) {
                 gpuPrice = gpuParts[indexGPU].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"GPU", gpuParts[indexGPU].GetName());
+                AddComponentToListBox(listBoxSelected, L"GPU", gpuParts[indexGPU].GetName(), gpuParts[indexGPU].GetPrice());
             }
             if (indexRAM != CB_ERR && indexRAM < parts.size()) {
                 ramPrice = ramParts[indexRAM].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"RAM", ramParts[indexRAM].GetName());
+                AddComponentToListBox(listBoxSelected, L"RAM", ramParts[indexRAM].GetName(), ramParts[indexRAM].GetPrice());
             }
             if (indexMotherboard != CB_ERR) {
                 motherboardPrice = motherboardParts[indexMotherboard].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"Motherboard", motherboardParts[indexMotherboard].GetName());
+                AddComponentToListBox(listBoxSelected, L"Motherboard", motherboardParts[indexMotherboard].GetName(), motherboardParts[indexMotherboard].GetPrice());
             }
             if (indexSSD != CB_ERR) {
                 ssdPrice = ssdParts[indexSSD].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"SSD", ssdParts[indexSSD].GetName());
+                AddComponentToListBox(listBoxSelected, L"SSD", ssdParts[indexSSD].GetName(), ssdParts[indexSSD].GetPrice());
             }
             if (indexHDD != CB_ERR) {
                 hddPrice = hddParts[indexHDD].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"HDD", hddParts[indexHDD].GetName());
+                AddComponentToListBox(listBoxSelected, L"HDD", hddParts[indexHDD].GetName(), hddParts[indexHDD].GetPrice());
             }
             if (indexPowersupply != CB_ERR) {
                 powersupplyPrice = powerSupplyParts[indexPowersupply].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"PowerSupply", powerSupplyParts[indexPowersupply].GetName());
+                AddComponentToListBox(listBoxSelected, L"PowerSupply", powerSupplyParts[indexPowersupply].GetName(), powerSupplyParts[indexPowersupply].GetPrice());
             }
             if (indexCooling != CB_ERR) {
                 coolingPrice = coolingParts[indexCooling].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"Cooling", coolingParts[indexCooling].GetName());
+                AddComponentToListBox(listBoxSelected, L"Cooling", coolingParts[indexCooling].GetName(), coolingParts[indexCooling].GetPrice());
             }
             if (indexCase != CB_ERR) {
                 casePrice = casesParts[indexCase].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"Case", casesParts[indexCase].GetName());
+                AddComponentToListBox(listBoxSelected, L"Case", casesParts[indexCase].GetName(), casesParts[indexCase].GetPrice());
             }
             if (indexOS != CB_ERR) {
                 osPrice = osParts[indexOS].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"OS", osParts[indexOS].GetName());
+                AddComponentToListBox(listBoxSelected, L"OS", osParts[indexOS].GetName(), osParts[indexOS].GetPrice());
             }
 
             double totalPrice = cpuPrice + gpuPrice + ramPrice 
                 + motherboardPrice + ssdPrice + hddPrice + powersupplyPrice 
                 + coolingPrice + casePrice + osPrice;
 
-            // Adjust total price if Bluetooth checkbox is checked
+            // if Bluetooth checkbox is checked
             if (SendMessage(checkboxBluetooth, BM_GETCHECK, 0, 0) == BST_CHECKED) {
                 totalPrice += 50.0;
-                AddComponentToListBox(listBoxSelected, L"Other", L"Bluetooth");
+                AddComponentToListBox(listBoxSelected, L"Other", L"Bluetooth", 50.0);
             }
-            // Adjust total price if Insurance checkbox is checked
+            // if Insurance checkbox is checked
             if (SendMessage(checkboxInsurance, BM_GETCHECK, 0, 0) == BST_CHECKED) {
                 totalPrice += 60.0;
-                AddComponentToListBox(listBoxSelected, L"Other", L"Insurance");
+                AddComponentToListBox(listBoxSelected, L"Other", L"Insurance", 60.0);
             }
-
-            
-          
-
 
             // Display the total price in the static text control
             wchar_t resultText[256];
@@ -420,11 +414,11 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             SetWindowText(staticResult, resultText);
          }
 
-
-
-
-
         else if (LOWORD(wParam) == IDCANCEL) { // Handle the Close button
+            EndDialog(hDlg, IDCANCEL);
+        } 
+
+        else if (LOWORD(wParam) == IDOK) { // Handle the OK button
             EndDialog(hDlg, IDCANCEL);
         } 
       
@@ -452,10 +446,13 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
     return (INT_PTR)FALSE;
 }
 
-void AddComponentToListBox(HWND listBox, const std::wstring& category, const std::wstring& componentName)
+void AddComponentToListBox(HWND listBox, const std::wstring& category, const std::wstring& componentName, double price)
 {
     // Assuming you have a std::wstring named itemText
-    std::wstring itemText = category + L": " + componentName;
+    std::wstringstream ss;
+    ss << std::fixed << std::setprecision(2) << price;
+    std::wstring priceText = ss.str();
+
+    std::wstring itemText = category + L": " + componentName + L" - $" + priceText;
     SendMessage(listBox, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
 }
-

@@ -343,25 +343,25 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             if (indexRAM != CB_ERR && indexRAM < parts.size()) {
                 ramPrice = ramParts[indexRAM].GetPrice();
             }
-            if (indexMotherboard != -1) {
+            if (indexMotherboard != CB_ERR) {
                 motherboardPrice = motherboardParts[indexMotherboard].GetPrice();
             }
-            if (indexSSD != -1) {
+            if (indexSSD != CB_ERR) {
                 ssdPrice = ssdParts[indexSSD].GetPrice();
             }
-            if (indexHDD != -1) {
+            if (indexHDD != CB_ERR) {
                 hddPrice = hddParts[indexHDD].GetPrice();
             }
-            if (indexPowersupply != -1) {
+            if (indexPowersupply != CB_ERR) {
                 powersupplyPrice = powerSupplyParts[indexPowersupply].GetPrice();
             }
-            if (indexCooling != -1) {
+            if (indexCooling != CB_ERR) {
                 coolingPrice = coolingParts[indexCooling].GetPrice();
             }
-            if (indexCase != -1) {
+            if (indexCase != CB_ERR) {
                 casePrice = casesParts[indexCase].GetPrice();
             }
-            if (indexOS != -1) {
+            if (indexOS != CB_ERR) {
                 osPrice = osParts[indexOS].GetPrice();
             }
 

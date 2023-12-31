@@ -16,7 +16,7 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult, checkboxBluetooth, checkboxInsurance, editCustomMessage, buttonReset,
-    comboMotherboard, comboSSD, comboHDD, comboPowerSupply, comboCooling, comboCase, comboOS, listBoxSelected;
+    comboMotherboard, comboSSD, comboHDD, comboPowerSupply, comboCooling, comboCase, comboOS, listBoxSelected, progressBar;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -25,6 +25,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 void AddComponentToListBox(HWND listBox, const std::wstring& category, const std::wstring& componentName, double price);
+void StartProgressBar();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -247,6 +248,11 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
         comboOS = GetDlgItem(hDlg, IDC_COMBO_OS);
         listBoxSelected = GetDlgItem(hDlg, IDC_LIST1);
 
+        progressBar = GetDlgItem(hDlg, IDC_PROGRESS1);
+        SendMessage(progressBar, PBM_SETRANGE, 0, MAKELPARAM(0, 100)); // Set range from 0 to 100
+        SendMessage(progressBar, PBM_SETPOS, 0, 0); // Set initial position to 0
+   
+
         // Populate combo boxes with example options
         for (const auto& part : parts) {
             std::wstringstream ss;
@@ -410,6 +416,9 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
                 MessageBox(hDlg, L"Please select at least one component.", L"Error", MB_OK | MB_ICONWARNING);
             }
 
+            // Progress bar
+            StartProgressBar();
+
             // Display the total price in the static text control
             wchar_t resultText[256];
             swprintf_s(resultText, L"Total Price: $%.2f", totalPrice);
@@ -455,4 +464,29 @@ void AddComponentToListBox(HWND listBox, const std::wstring& category, const std
 
     std::wstring itemText = category + L": " + componentName + L" - $" + priceText;
     SendMessage(listBox, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+}
+
+void StartProgressBar()
+{
+    // Disable the Calculate button during the calculation
+    EnableWindow(buttonCalculate, FALSE);
+
+    // Reset the progress bar to 0%
+    SendMessage(progressBar, PBM_SETPOS, 0, 0);
+
+    for (int i = 1; i <= 100; ++i) {
+        // Perform a small part of the calculation
+
+        // Update progress bar
+        SendMessage(progressBar, PBM_SETPOS, i, 0);
+
+        // Sleep for a short duration to simulate work
+        Sleep(20);
+    }
+
+    // Enable the Calculate button after the calculation is complete
+    EnableWindow(buttonCalculate, TRUE);
+            
+    // Reset the progress bar to 100%
+    SendMessage(progressBar, PBM_SETPOS, 100, 0);
 }

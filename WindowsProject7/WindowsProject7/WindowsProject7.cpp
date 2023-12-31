@@ -23,9 +23,13 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
 INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 void AddComponentToListBox(HWND listBox, const std::wstring& category, const std::wstring& componentName, double price);
 void StartProgressBar();
+double CalculateTotalPrice();
+void PopulateComboBoxesWithTheData();
+void ResetAllFields();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -232,10 +236,10 @@ std::vector<Part> osParts;
 INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
+
     switch (message)
     {
     case WM_INITDIALOG:
-        // Combo boxes
         comboCPU = GetDlgItem(hDlg, IDC_COMBO_CPU); // Slojil sum Sort=False
         comboGPU = GetDlgItem(hDlg, IDC_COMBO_GPU); 
         comboRAM = GetDlgItem(hDlg, IDC_COMBO_RAM); 
@@ -247,75 +251,7 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
         comboCase = GetDlgItem(hDlg, IDC_COMBO_CASE);
         comboOS = GetDlgItem(hDlg, IDC_COMBO_OS);
         listBoxSelected = GetDlgItem(hDlg, IDC_LIST1);
-
         progressBar = GetDlgItem(hDlg, IDC_PROGRESS1);
-        SendMessage(progressBar, PBM_SETRANGE, 0, MAKELPARAM(0, 100)); // Set range from 0 to 100
-        SendMessage(progressBar, PBM_SETPOS, 0, 0); // Set initial position to 0
-   
-
-        // Populate combo boxes with example options
-        for (const auto& part : parts) {
-            std::wstringstream ss;
-            ss << std::fixed << std::setprecision(2) << part.GetPrice();
-            std::wstring priceText = ss.str();
-
-            // Ensure exactly 2 digits after the dot
-            size_t dotPos = priceText.find(L'.');
-            if (dotPos != std::wstring::npos && priceText.length() > dotPos + 2) {
-                priceText = priceText.substr(0, dotPos + 3);
-            } else {
-                priceText += L".00";
-            }
-
-            std::wstring itemText = part.GetName() + L" - $" + priceText;
-
-            // Add the string to the respective combo box based on part type
-            switch (part.GetPartType()) {
-                case PartType::CPU:
-                    cpuParts.push_back(part); // Add the part in its PartType Vector
-                    SendMessage(comboCPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
-                    break;
-                case PartType::GPU:
-                    gpuParts.push_back(part); 
-                    SendMessage(comboGPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
-                    break;
-                case PartType::RAM:
-                    ramParts.push_back(part); 
-                    SendMessage(comboRAM, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
-                    break;
-                case PartType::Motherboard:
-                    motherboardParts.push_back(part);
-                    SendMessage(comboMotherboard, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
-                    break;
-                 case PartType::SSD:
-                    ssdParts.push_back(part);
-                    SendMessage(comboSSD, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
-                    break;
-                case PartType::HDD:
-                    hddParts.push_back(part);
-                    SendMessage(comboHDD, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
-                    break;
-                case PartType::PowerSupply:
-                    powerSupplyParts.push_back(part);
-                    SendMessage(comboPowerSupply, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
-                    break;
-                case PartType::Cooling:
-                    coolingParts.push_back(part);
-                    SendMessage(comboCooling, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
-                    break;
-                case PartType::Case:
-                    casesParts.push_back(part);
-                    SendMessage(comboCase, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
-                    break;
-                case PartType::OS:
-                    osParts.push_back(part);
-                    SendMessage(comboOS, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
-                    break;
-                // Add similar cases for other part types
-
-            }
-        }
-
         checkboxBluetooth = GetDlgItem(hDlg, IDC_CHECK_BLUETOOTH);
         checkboxInsurance = GetDlgItem(hDlg, IDC_CHECK_INSURANCE);
         editCustomMessage = GetDlgItem(hDlg, IDC_EDIT_CUSTOMMESSAGE);
@@ -323,6 +259,7 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
         staticResult = GetDlgItem(hDlg, IDC_STATIC_RESULT);
         buttonReset = GetDlgItem(hDlg, IDC_BUTTON_RESET);
 
+        PopulateComboBoxesWithTheData(); // Populate combo boxes with example options
         break;
 
     case WM_COMMAND:
@@ -331,124 +268,30 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
 
             SendMessage(listBoxSelected, LB_RESETCONTENT, 0, 0); // Clear the ListBox
 
-            // Get the selected options from combo boxes
-            int indexCPU = SendMessage(comboCPU, CB_GETCURSEL, 0, 0);
-            int indexGPU = SendMessage(comboGPU, CB_GETCURSEL, 0, 0);
-            int indexRAM = SendMessage(comboRAM, CB_GETCURSEL, 0, 0);
-            int indexMotherboard = SendMessage(comboMotherboard, CB_GETCURSEL, 0, 0);
-            int indexSSD = SendMessage(comboSSD, CB_GETCURSEL, 0, 0);
-            int indexHDD = SendMessage(comboHDD, CB_GETCURSEL, 0, 0);
-            int indexPowersupply = SendMessage(comboPowerSupply, CB_GETCURSEL, 0, 0);
-            int indexCooling = SendMessage(comboCooling, CB_GETCURSEL, 0, 0);
-            int indexCase = SendMessage(comboCase, CB_GETCURSEL, 0, 0);
-            int indexOS = SendMessage(comboOS, CB_GETCURSEL, 0, 0);
-
-            double cpuPrice = 0;
-            double gpuPrice = 0;
-            double ramPrice = 0;
-            double motherboardPrice = 0;
-            double ssdPrice = 0;
-            double hddPrice = 0;
-            double powersupplyPrice = 0;
-            double coolingPrice = 0;
-            double casePrice = 0;
-            double osPrice = 0;
-
-            // if any selection is made
-            if (indexCPU != CB_ERR && indexCPU < parts.size()) {
-                cpuPrice = cpuParts[indexCPU].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"CPU", cpuParts[indexCPU].GetName(), cpuParts[indexCPU].GetPrice());
-            }        
-            if (indexGPU != CB_ERR && indexGPU < parts.size()) {
-                gpuPrice = gpuParts[indexGPU].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"GPU", gpuParts[indexGPU].GetName(), gpuParts[indexGPU].GetPrice());
-            }
-            if (indexRAM != CB_ERR && indexRAM < parts.size()) {
-                ramPrice = ramParts[indexRAM].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"RAM", ramParts[indexRAM].GetName(), ramParts[indexRAM].GetPrice());
-            }
-            if (indexMotherboard != CB_ERR) {
-                motherboardPrice = motherboardParts[indexMotherboard].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"Motherboard", motherboardParts[indexMotherboard].GetName(), motherboardParts[indexMotherboard].GetPrice());
-            }
-            if (indexSSD != CB_ERR) {
-                ssdPrice = ssdParts[indexSSD].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"SSD", ssdParts[indexSSD].GetName(), ssdParts[indexSSD].GetPrice());
-            }
-            if (indexHDD != CB_ERR) {
-                hddPrice = hddParts[indexHDD].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"HDD", hddParts[indexHDD].GetName(), hddParts[indexHDD].GetPrice());
-            }
-            if (indexPowersupply != CB_ERR) {
-                powersupplyPrice = powerSupplyParts[indexPowersupply].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"PowerSupply", powerSupplyParts[indexPowersupply].GetName(), powerSupplyParts[indexPowersupply].GetPrice());
-            }
-            if (indexCooling != CB_ERR) {
-                coolingPrice = coolingParts[indexCooling].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"Cooling", coolingParts[indexCooling].GetName(), coolingParts[indexCooling].GetPrice());
-            }
-            if (indexCase != CB_ERR) {
-                casePrice = casesParts[indexCase].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"Case", casesParts[indexCase].GetName(), casesParts[indexCase].GetPrice());
-            }
-            if (indexOS != CB_ERR) {
-                osPrice = osParts[indexOS].GetPrice();
-                AddComponentToListBox(listBoxSelected, L"OS", osParts[indexOS].GetName(), osParts[indexOS].GetPrice());
-            }
-
-            double totalPrice = cpuPrice + gpuPrice + ramPrice 
-                + motherboardPrice + ssdPrice + hddPrice + powersupplyPrice 
-                + coolingPrice + casePrice + osPrice;
-
-            // if Bluetooth checkbox is checked
-            if (SendMessage(checkboxBluetooth, BM_GETCHECK, 0, 0) == BST_CHECKED) {
-                totalPrice += 50.0;
-                AddComponentToListBox(listBoxSelected, L"Other", L"Bluetooth", 50.0);
-            }
-            // if Insurance checkbox is checked
-            if (SendMessage(checkboxInsurance, BM_GETCHECK, 0, 0) == BST_CHECKED) {
-                totalPrice += 60.0;
-                AddComponentToListBox(listBoxSelected, L"Other", L"Insurance", 60.0);
-            }
+            double totalPrice = CalculateTotalPrice(); // Calculate total price
 
             if (totalPrice == 0)
             {
                 MessageBox(hDlg, L"Please select at least one component.", L"Error", MB_OK | MB_ICONWARNING);
             }
+            else
+            {
+                StartProgressBar(); // Start Progress bar
 
-            // Progress bar
-            StartProgressBar();
-
-            // Display the total price in the static text control
-            wchar_t resultText[256];
-            swprintf_s(resultText, L"Total Price: $%.2f", totalPrice);
-            SetWindowText(staticResult, resultText);
+                // Display the total price in the static text control
+                wchar_t resultText[256];
+                swprintf_s(resultText, L"Total Price: $%.2f", totalPrice);
+                SetWindowText(staticResult, resultText);
+            }
          }
-
         else if (LOWORD(wParam) == IDCANCEL) { // Handle the Close button
              if (MessageBox(hDlg, L"Are you sure you want to exit?", L"Confirmation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
                 EndDialog(hDlg, IDCANCEL);
             }
         } 
-      
         else if (LOWORD(wParam) == IDC_BUTTON_RESET) { // Handle the Reset button click
-            SendMessage(comboCPU, CB_SETCURSEL, -1, 0);  
-            SendMessage(comboGPU, CB_SETCURSEL, -1, 0);  
-            SendMessage(comboRAM, CB_SETCURSEL, -1, 0);  
-            SendMessage(checkboxBluetooth, BM_SETCHECK, BST_UNCHECKED, 0); 
-            SendMessage(checkboxInsurance, BM_SETCHECK, BST_UNCHECKED, 0); 
-            SetWindowText(editCustomMessage, L"");  
-            SetWindowText(staticResult, L"Total Price: $0.00");  
-            SendMessage(comboMotherboard, CB_SETCURSEL, -1, 0); 
-            SendMessage(comboSSD, CB_SETCURSEL, -1, 0); 
-            SendMessage(comboHDD, CB_SETCURSEL, -1, 0); 
-            SendMessage(comboPowerSupply, CB_SETCURSEL, -1, 0); 
-            SendMessage(comboCooling, CB_SETCURSEL, -1, 0); 
-            SendMessage(comboCase, CB_SETCURSEL, -1, 0); 
-            SendMessage(comboOS, CB_SETCURSEL, -1, 0); 
-            SendMessage(listBoxSelected, LB_RESETCONTENT, 0, 0);
+            ResetAllFields();
         }
-
         break;
     }
 
@@ -457,7 +300,6 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
 
 void AddComponentToListBox(HWND listBox, const std::wstring& category, const std::wstring& componentName, double price)
 {
-    // Assuming you have a std::wstring named itemText
     std::wstringstream ss;
     ss << std::fixed << std::setprecision(2) << price;
     std::wstring priceText = ss.str();
@@ -468,25 +310,183 @@ void AddComponentToListBox(HWND listBox, const std::wstring& category, const std
 
 void StartProgressBar()
 {
-    // Disable the Calculate button during the calculation
-    EnableWindow(buttonCalculate, FALSE);
-
-    // Reset the progress bar to 0%
-    SendMessage(progressBar, PBM_SETPOS, 0, 0);
+    EnableWindow(buttonCalculate, FALSE); // Disable the Calculate button during the calculation
+    SendMessage(progressBar, PBM_SETPOS, 0, 0); // Reset the progress bar to 0%
 
     for (int i = 1; i <= 100; ++i) {
-        // Perform a small part of the calculation
-
-        // Update progress bar
-        SendMessage(progressBar, PBM_SETPOS, i, 0);
-
-        // Sleep for a short duration to simulate work
-        Sleep(20);
+        SendMessage(progressBar, PBM_SETPOS, i, 0);  // Update progress bar
+        Sleep(20); // Sleep for a short duration to simulate work
     }
 
-    // Enable the Calculate button after the calculation is complete
-    EnableWindow(buttonCalculate, TRUE);
-            
-    // Reset the progress bar to 100%
-    SendMessage(progressBar, PBM_SETPOS, 100, 0);
+    EnableWindow(buttonCalculate, TRUE); // Enable the Calculate button     
+    SendMessage(progressBar, PBM_SETPOS, 0, 0); // Reset the progress bar to 0%
+}
+
+double CalculateTotalPrice()
+{
+    // Get the selected options from combo boxes
+    int indexCPU = SendMessage(comboCPU, CB_GETCURSEL, 0, 0);
+    int indexGPU = SendMessage(comboGPU, CB_GETCURSEL, 0, 0);
+    int indexRAM = SendMessage(comboRAM, CB_GETCURSEL, 0, 0);
+    int indexMotherboard = SendMessage(comboMotherboard, CB_GETCURSEL, 0, 0);
+    int indexSSD = SendMessage(comboSSD, CB_GETCURSEL, 0, 0);
+    int indexHDD = SendMessage(comboHDD, CB_GETCURSEL, 0, 0);
+    int indexPowersupply = SendMessage(comboPowerSupply, CB_GETCURSEL, 0, 0);
+    int indexCooling = SendMessage(comboCooling, CB_GETCURSEL, 0, 0);
+    int indexCase = SendMessage(comboCase, CB_GETCURSEL, 0, 0);
+    int indexOS = SendMessage(comboOS, CB_GETCURSEL, 0, 0);
+
+    double cpuPrice = 0;
+    double gpuPrice = 0;
+    double ramPrice = 0;
+    double motherboardPrice = 0;
+    double ssdPrice = 0;
+    double hddPrice = 0;
+    double powersupplyPrice = 0;
+    double coolingPrice = 0;
+    double casePrice = 0;
+    double osPrice = 0;
+
+    // if any selection is made
+    if (indexCPU != CB_ERR && indexCPU < parts.size()) {
+        cpuPrice = cpuParts[indexCPU].GetPrice();
+        AddComponentToListBox(listBoxSelected, L"CPU", cpuParts[indexCPU].GetName(), cpuParts[indexCPU].GetPrice());
+    }        
+    if (indexGPU != CB_ERR && indexGPU < parts.size()) {
+        gpuPrice = gpuParts[indexGPU].GetPrice();
+        AddComponentToListBox(listBoxSelected, L"GPU", gpuParts[indexGPU].GetName(), gpuParts[indexGPU].GetPrice());
+    }
+    if (indexRAM != CB_ERR && indexRAM < parts.size()) {
+        ramPrice = ramParts[indexRAM].GetPrice();
+        AddComponentToListBox(listBoxSelected, L"RAM", ramParts[indexRAM].GetName(), ramParts[indexRAM].GetPrice());
+    }
+    if (indexMotherboard != CB_ERR) {
+        motherboardPrice = motherboardParts[indexMotherboard].GetPrice();
+        AddComponentToListBox(listBoxSelected, L"Motherboard", motherboardParts[indexMotherboard].GetName(), motherboardParts[indexMotherboard].GetPrice());
+    }
+    if (indexSSD != CB_ERR) {
+        ssdPrice = ssdParts[indexSSD].GetPrice();
+        AddComponentToListBox(listBoxSelected, L"SSD", ssdParts[indexSSD].GetName(), ssdParts[indexSSD].GetPrice());
+    }
+    if (indexHDD != CB_ERR) {
+        hddPrice = hddParts[indexHDD].GetPrice();
+        AddComponentToListBox(listBoxSelected, L"HDD", hddParts[indexHDD].GetName(), hddParts[indexHDD].GetPrice());
+    }
+    if (indexPowersupply != CB_ERR) {
+        powersupplyPrice = powerSupplyParts[indexPowersupply].GetPrice();
+        AddComponentToListBox(listBoxSelected, L"PowerSupply", powerSupplyParts[indexPowersupply].GetName(), powerSupplyParts[indexPowersupply].GetPrice());
+    }
+    if (indexCooling != CB_ERR) {
+        coolingPrice = coolingParts[indexCooling].GetPrice();
+        AddComponentToListBox(listBoxSelected, L"Cooling", coolingParts[indexCooling].GetName(), coolingParts[indexCooling].GetPrice());
+    }
+    if (indexCase != CB_ERR) {
+        casePrice = casesParts[indexCase].GetPrice();
+        AddComponentToListBox(listBoxSelected, L"Case", casesParts[indexCase].GetName(), casesParts[indexCase].GetPrice());
+    }
+    if (indexOS != CB_ERR) {
+        osPrice = osParts[indexOS].GetPrice();
+        AddComponentToListBox(listBoxSelected, L"OS", osParts[indexOS].GetName(), osParts[indexOS].GetPrice());
+    }
+
+    double totalPrice = cpuPrice + gpuPrice + ramPrice 
+        + motherboardPrice + ssdPrice + hddPrice + powersupplyPrice 
+        + coolingPrice + casePrice + osPrice;
+
+    // if Bluetooth checkbox is checked
+    if (SendMessage(checkboxBluetooth, BM_GETCHECK, 0, 0) == BST_CHECKED) {
+        totalPrice += 50.0;
+        AddComponentToListBox(listBoxSelected, L"Other", L"Bluetooth", 50.0);
+    }
+    // if Insurance checkbox is checked
+    if (SendMessage(checkboxInsurance, BM_GETCHECK, 0, 0) == BST_CHECKED) {
+        totalPrice += 60.0;
+        AddComponentToListBox(listBoxSelected, L"Other", L"Insurance", 60.0);
+    }
+
+    return totalPrice;
+}
+
+void PopulateComboBoxesWithTheData()
+{
+    for (const auto& part : parts) {
+        std::wstringstream ss;
+        ss << std::fixed << std::setprecision(2) << part.GetPrice();
+        std::wstring priceText = ss.str();
+
+        // Ensure exactly 2 digits after the dot
+        size_t dotPos = priceText.find(L'.');
+        if (dotPos != std::wstring::npos && priceText.length() > dotPos + 2) {
+            priceText = priceText.substr(0, dotPos + 3);
+        } else {
+            priceText += L".00";
+        }
+
+        std::wstring itemText = part.GetName() + L" - $" + priceText;
+
+        // Add the string to the respective combo box based on part type
+        switch (part.GetPartType()) {
+            case PartType::CPU:
+                cpuParts.push_back(part); // Add the part in its PartType Vector
+                SendMessage(comboCPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                break;
+            case PartType::GPU:
+                gpuParts.push_back(part); 
+                SendMessage(comboGPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                break;
+            case PartType::RAM:
+                ramParts.push_back(part); 
+                SendMessage(comboRAM, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                break;
+            case PartType::Motherboard:
+                motherboardParts.push_back(part);
+                SendMessage(comboMotherboard, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                break;
+                case PartType::SSD:
+                ssdParts.push_back(part);
+                SendMessage(comboSSD, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                break;
+            case PartType::HDD:
+                hddParts.push_back(part);
+                SendMessage(comboHDD, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                break;
+            case PartType::PowerSupply:
+                powerSupplyParts.push_back(part);
+                SendMessage(comboPowerSupply, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                break;
+            case PartType::Cooling:
+                coolingParts.push_back(part);
+                SendMessage(comboCooling, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                break;
+            case PartType::Case:
+                casesParts.push_back(part);
+                SendMessage(comboCase, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                break;
+            case PartType::OS:
+                osParts.push_back(part);
+                SendMessage(comboOS, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                break;
+            // Add similar cases for other part types
+
+        }
+    }
+}
+
+void ResetAllFields()
+{
+    SendMessage(comboCPU, CB_SETCURSEL, -1, 0);  
+    SendMessage(comboGPU, CB_SETCURSEL, -1, 0);  
+    SendMessage(comboRAM, CB_SETCURSEL, -1, 0);  
+    SendMessage(checkboxBluetooth, BM_SETCHECK, BST_UNCHECKED, 0); 
+    SendMessage(checkboxInsurance, BM_SETCHECK, BST_UNCHECKED, 0); 
+    SetWindowText(editCustomMessage, L"");  
+    SetWindowText(staticResult, L"Total Price: $0.00");  
+    SendMessage(comboMotherboard, CB_SETCURSEL, -1, 0); 
+    SendMessage(comboSSD, CB_SETCURSEL, -1, 0); 
+    SendMessage(comboHDD, CB_SETCURSEL, -1, 0); 
+    SendMessage(comboPowerSupply, CB_SETCURSEL, -1, 0); 
+    SendMessage(comboCooling, CB_SETCURSEL, -1, 0); 
+    SendMessage(comboCase, CB_SETCURSEL, -1, 0); 
+    SendMessage(comboOS, CB_SETCURSEL, -1, 0); 
+    SendMessage(listBoxSelected, LB_RESETCONTENT, 0, 0);
 }

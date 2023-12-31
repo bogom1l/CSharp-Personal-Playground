@@ -1,5 +1,4 @@
 // WindowsProject7.cpp : Defines the entry point for the application.
-//
 #include <windows.h>
 #include <CommCtrl.h>
 #include <string>
@@ -127,7 +126,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-
             EndPaint(hWnd, &ps);
         }
         break;
@@ -158,7 +156,6 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return (INT_PTR)FALSE;
 }
-
 
 Part intel_i5(L"Intel i5", 200.0, PartType::CPU);
 Part amd_ryzen_7(L"AMD Ryzen 7", 250.0, PartType::CPU);

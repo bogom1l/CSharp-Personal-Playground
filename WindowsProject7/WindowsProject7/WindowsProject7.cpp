@@ -404,6 +404,15 @@ double CalculateTotalPrice()
         AddComponentToListBox(listBoxSelected, L"Other", L"Insurance", 60.0);
     }
 
+    wchar_t buffer[256];
+    GetWindowText(editCustomMessage, buffer, sizeof(buffer) / sizeof(buffer[0]));
+
+    // Check if the edit control is not empty
+    if (wcslen(buffer) > 0) {
+        SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"[Additional information] :"));
+        SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));
+    }
+
     return totalPrice;
 }
 

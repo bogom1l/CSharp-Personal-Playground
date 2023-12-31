@@ -287,7 +287,7 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
         else if (LOWORD(wParam) == IDCANCEL) { // Handle the Close button
              if (MessageBox(hDlg, L"Are you sure you want to exit?", L"Confirmation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
                 EndDialog(hDlg, IDCANCEL);
-            }
+             }
         } 
         else if (LOWORD(wParam) == IDC_BUTTON_RESET) { // Handle the Reset button click
             ResetAllFields();
@@ -404,10 +404,10 @@ double CalculateTotalPrice()
         AddComponentToListBox(listBoxSelected, L"Other", L"Insurance", 60.0);
     }
 
+    // Add additional info from edit control to the listbox
     wchar_t buffer[256];
     GetWindowText(editCustomMessage, buffer, sizeof(buffer) / sizeof(buffer[0]));
 
-    // Check if the edit control is not empty
     if (wcslen(buffer) > 0) {
         SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"[Additional information] :"));
         SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));

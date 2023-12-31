@@ -14,7 +14,8 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult, checkboxBluetooth, checkboxInsurance, editCustomMessage, buttonReset;
+HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult, checkboxBluetooth, checkboxInsurance, editCustomMessage, buttonReset,
+    comboMotherboard, comboSSD, comboHDD, comboPowerSupply, comboCooling, comboCase, comboOS;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -160,25 +161,72 @@ Part intel_i5(L"Intel i5", 200.0, PartType::CPU);
 Part amd_ryzen_7(L"AMD Ryzen 7", 250.0, PartType::CPU);
 Part intel_i9(L"Intel i9", 400.0, PartType::CPU);
 Part amd_ryzen_9(L"AMD Ryzen 9", 450.0, PartType::CPU);
+
 Part nvidia_rtx3060(L"NVIDIA RTX 3060", 300.0, PartType::GPU);
 Part nvidia_rtx3070(L"NVIDIA RTX 3070", 450.0, PartType::GPU);
 Part nvidia_rtx3080(L"NVIDIA RTX 3080", 600.0, PartType::GPU);
 Part amd_rx6700xt(L"AMD Radeon RX 6700 XT", 400.0, PartType::GPU);
 Part amd_rx6800xt(L"AMD Radeon RX 6800 XT", 550.0, PartType::GPU);
 Part amd_rx6900xt(L"AMD Radeon RX 6900 XT", 700.0, PartType::GPU);
+
 Part ram_16gb_ddr4(L"16GB DDR4", 80.0, PartType::RAM);
 Part ram_32gb_ddr4(L"32GB DDR4", 150.0, PartType::RAM);
 Part ram_64gb_ddr4(L"64GB DDR4", 280.0, PartType::RAM);
 
+Part motherboard_asus1(L"ASUS ROG Strix B550-F Gaming", 250.0, PartType::Motherboard);
+Part motherboard_msi1(L"MSI MPG Z490 Gaming Edge WiFi", 350.0, PartType::Motherboard);
+Part motherboard_gigabyte1(L"Gigabyte B450 AORUS Elite", 210.0, PartType::Motherboard);
+Part motherboard_asrock1(L"ASRock B550M-ITX/ac", 150.0, PartType::Motherboard);
+
+Part ssd_samsung1(L"Samsung 970 EVO Plus 500GB (NVMe)", 170.0, PartType::SSD);
+Part ssd_crucial1(L"Crucial MX500 1TB (SATA)", 120.0, PartType::SSD);
+Part ssd_wd1(L"WD Black SN750 1TB (NVMe)", 190.0, PartType::SSD);
+Part ssd_kingston1(L"Kingston A2000 250GB (NVMe)", 110.0, PartType::SSD);
+
+Part hdd_seagate1(L"Seagate Barracuda 2TB (7200 RPM)", 115.0, PartType::HDD);
+Part hdd_western1(L"Western Digital Blue 4TB (5400 RPM)", 185.0, PartType::HDD);
+Part hdd_toshiba1(L"Toshiba P300 1TB (7200 RPM)", 99.0, PartType::HDD);
+
+Part powerSupply_evga1(L"EVGA SuperNOVA 650 G5, 80 Plus Gold 650W", 60.0, PartType::PowerSupply);
+Part powerSupply_corsair1(L"Corsair RM750x, 80 Plus Gold 750W", 85.0, PartType::PowerSupply);
+Part powerSupply_seasonic1(L"Seasonic FOCUS GX-850, 80 Plus Gold 850W", 50.0, PartType::PowerSupply);
+
+Part cooling_noctua1(L"Noctua NH-D15 (Air Cooling)", 30.0, PartType::Cooling);
+Part cooling_corsair1(L"Corsair H100i RGB Platinum SE (Liquid Cooling)", 40.0, PartType::Cooling);
+Part cooling_nzxt1(L"NZXT Kraken X63 (Liquid Cooling)", 95.0, PartType::Cooling);
+
+Part case_nzxt1(L"NZXT H510i", 60.0, PartType::Case);
+Part case_coolermaster1(L"Cooler Master MasterBox Q300L", 29.0, PartType::Case);
+Part case_phanteks1(L"Phanteks Enthoo Pro", 120.0, PartType::Case);
+
+Part os_windows(L"Windows 11 (Pro)", 100.0, PartType::OS);
+Part os_linux(L"Linux (Ubuntu)", 80.0, PartType::OS);
+Part os_macOS(L"macOS (Big Sur)", 120.0, PartType::OS);
+Part os_none(L"None", 0.0, PartType::OS);
+
 std::vector<Part> parts = {
     intel_i5, amd_ryzen_7, intel_i9, amd_ryzen_9,
     nvidia_rtx3060, nvidia_rtx3070, nvidia_rtx3080, amd_rx6700xt, amd_rx6800xt, amd_rx6900xt,
-    ram_16gb_ddr4, ram_32gb_ddr4, ram_64gb_ddr4
+    ram_16gb_ddr4, ram_32gb_ddr4, ram_64gb_ddr4,
+    motherboard_asus1, motherboard_msi1, motherboard_gigabyte1, motherboard_asrock1,
+    ssd_samsung1, ssd_crucial1, ssd_wd1, ssd_kingston1,
+    hdd_seagate1, hdd_western1, hdd_toshiba1, 
+    powerSupply_evga1, powerSupply_corsair1, powerSupply_seasonic1, 
+    cooling_noctua1, cooling_corsair1, cooling_nzxt1, 
+    case_nzxt1, case_coolermaster1, case_phanteks1, 
+    os_windows, os_linux, os_macOS, os_none
 };
 
 std::vector<Part> cpuParts;
 std::vector<Part> gpuParts;
 std::vector<Part> ramParts;
+std::vector<Part> motherboardParts;
+std::vector<Part> ssdParts;
+std::vector<Part> hddParts;
+std::vector<Part> powerSupplyParts;
+std::vector<Part> coolingParts;
+std::vector<Part> casesParts;
+std::vector<Part> osParts;
 
 INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -186,10 +234,17 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
     switch (message)
     {
     case WM_INITDIALOG:
-        // Combo boxes for CPU, GPU, and RAM
+        // Combo boxes
         comboCPU = GetDlgItem(hDlg, IDC_COMBO_CPU); // Slojil sum Sort=False
-        comboGPU = GetDlgItem(hDlg, IDC_COMBO_GPU); // Slojil sum Sort=False
-        comboRAM = GetDlgItem(hDlg, IDC_COMBO_RAM); // Slojil sum Sort=False
+        comboGPU = GetDlgItem(hDlg, IDC_COMBO_GPU); 
+        comboRAM = GetDlgItem(hDlg, IDC_COMBO_RAM); 
+        comboMotherboard = GetDlgItem(hDlg, IDC_COMBO_MOTHERBOARD);
+        comboSSD = GetDlgItem(hDlg, IDC_COMBO_SSD);
+        comboHDD = GetDlgItem(hDlg, IDC_COMBO_HDD);
+        comboPowerSupply = GetDlgItem(hDlg, IDC_COMBO_POWERSUPPLY);
+        comboCooling = GetDlgItem(hDlg, IDC_COMBO_COOLING);
+        comboCase = GetDlgItem(hDlg, IDC_COMBO_CASE);
+        comboOS = GetDlgItem(hDlg, IDC_COMBO_OS);
 
         // Populate combo boxes with example options
         for (const auto& part : parts) {
@@ -202,12 +257,40 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
                     SendMessage(comboCPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
                     break;
                 case PartType::GPU:
-                    gpuParts.push_back(part); // Add the part in its PartType Vector
+                    gpuParts.push_back(part); 
                     SendMessage(comboGPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
                     break;
                 case PartType::RAM:
-                    ramParts.push_back(part); // Add the part in its PartType Vector
+                    ramParts.push_back(part); 
                     SendMessage(comboRAM, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                    break;
+                case PartType::Motherboard:
+                    motherboardParts.push_back(part);
+                    SendMessage(comboMotherboard, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                    break;
+                 case PartType::SSD:
+                    ssdParts.push_back(part);
+                    SendMessage(comboSSD, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                    break;
+                case PartType::HDD:
+                    hddParts.push_back(part);
+                    SendMessage(comboHDD, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                    break;
+                case PartType::PowerSupply:
+                    powerSupplyParts.push_back(part);
+                    SendMessage(comboPowerSupply, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                    break;
+                case PartType::Cooling:
+                    coolingParts.push_back(part);
+                    SendMessage(comboCooling, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                    break;
+                case PartType::Case:
+                    casesParts.push_back(part);
+                    SendMessage(comboCase, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                    break;
+                case PartType::OS:
+                    osParts.push_back(part);
+                    SendMessage(comboOS, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
                     break;
                 // Add similar cases for other part types
 
@@ -231,24 +314,60 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             int indexCPU = SendMessage(comboCPU, CB_GETCURSEL, 0, 0);
             int indexGPU = SendMessage(comboGPU, CB_GETCURSEL, 0, 0);
             int indexRAM = SendMessage(comboRAM, CB_GETCURSEL, 0, 0);
+            int indexMotherboard = SendMessage(comboMotherboard, CB_GETCURSEL, 0, 0);
+            int indexSSD = SendMessage(comboSSD, CB_GETCURSEL, 0, 0);
+            int indexHDD = SendMessage(comboHDD, CB_GETCURSEL, 0, 0);
+            int indexPowersupply = SendMessage(comboPowerSupply, CB_GETCURSEL, 0, 0);
+            int indexCooling = SendMessage(comboCooling, CB_GETCURSEL, 0, 0);
+            int indexCase = SendMessage(comboCase, CB_GETCURSEL, 0, 0);
+            int indexOS = SendMessage(comboOS, CB_GETCURSEL, 0, 0);
 
             double cpuPrice = 0;
             double gpuPrice = 0;
             double ramPrice = 0;
+            double motherboardPrice = 0;
+            double ssdPrice = 0;
+            double hddPrice = 0;
+            double powersupplyPrice = 0;
+            double coolingPrice = 0;
+            double casePrice = 0;
+            double osPrice = 0;
 
             // Check if any selection is not made
             if (indexCPU != CB_ERR && indexCPU < parts.size()) {
                 cpuPrice = cpuParts[indexCPU].GetPrice();
             }        
-            
             if (indexGPU != CB_ERR && indexGPU < parts.size()) {
                 gpuPrice = gpuParts[indexGPU].GetPrice();
             }
             if (indexRAM != CB_ERR && indexRAM < parts.size()) {
                 ramPrice = ramParts[indexRAM].GetPrice();
             }
+            if (indexMotherboard != -1) {
+                motherboardPrice = motherboardParts[indexMotherboard].GetPrice();
+            }
+            if (indexSSD != -1) {
+                ssdPrice = ssdParts[indexSSD].GetPrice();
+            }
+            if (indexHDD != -1) {
+                hddPrice = hddParts[indexHDD].GetPrice();
+            }
+            if (indexPowersupply != -1) {
+                powersupplyPrice = powerSupplyParts[indexPowersupply].GetPrice();
+            }
+            if (indexCooling != -1) {
+                coolingPrice = coolingParts[indexCooling].GetPrice();
+            }
+            if (indexCase != -1) {
+                casePrice = casesParts[indexCase].GetPrice();
+            }
+            if (indexOS != -1) {
+                osPrice = osParts[indexOS].GetPrice();
+            }
 
-            double totalPrice = cpuPrice + gpuPrice + ramPrice;
+            double totalPrice = cpuPrice + gpuPrice + ramPrice 
+                + motherboardPrice + ssdPrice + hddPrice + powersupplyPrice 
+                + coolingPrice + casePrice + osPrice;
 
             // Adjust total price if Bluetooth checkbox is checked
             if (SendMessage(checkboxBluetooth, BM_GETCHECK, 0, 0) == BST_CHECKED) {

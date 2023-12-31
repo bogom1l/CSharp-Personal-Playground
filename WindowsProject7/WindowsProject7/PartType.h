@@ -4,5 +4,11 @@ enum class PartType {
     CPU,
     GPU,
     RAM,
-    // Add more part types as needed
+    Motherboard,
+    SSD,
+    HDD,
+    PowerSupply,
+    Cooling,
+    Case,
+    OS
 };

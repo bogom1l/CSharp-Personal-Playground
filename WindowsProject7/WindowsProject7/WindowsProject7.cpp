@@ -1,11 +1,11 @@
 // WindowsProject7.cpp : Defines the entry point for the application.
-#include <windows.h>
-#include <CommCtrl.h>
-#include <string>
-#include <unordered_map>
+
+#include <windows.h> // for the file saving
+#include <CommCtrl.h> // for the progress bar
+#include <unordered_map> // for std::vector
 #include <iomanip>  // For std::fixed and std::setprecision
 #include <sstream>  // For std::wstringstream
-#include <fstream>
+#include <fstream> // for the file saving
 #include "Part.h"  // Include the Part class definition
 #include "framework.h"
 #include "WindowsProject7.h"
@@ -16,18 +16,18 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult, checkboxBluetooth, checkboxInsurance, editCustomMessage, buttonReset,
-    comboMotherboard, comboSSD, comboHDD, comboPowerSupply, comboCooling, comboCase, comboOS, listBoxSelected, progressBar;
-int fileCounter = 1;
+HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult, checkboxBluetooth, checkboxInsurance, 
+     editCustomMessage, buttonReset, comboMotherboard, comboSSD, comboHDD, comboPowerSupply,
+     comboCooling, comboCase, comboOS, listBoxSelected, progressBar;
 double BLUETOOTH_PRICE = 50.0;
 double INSURANCE_PRICE = 60.0;
+int fileCounter = 1;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-
 INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 void AddComponentToListBox(HWND listBox, const std::wstring& category, const std::wstring& componentName, double price);
 void StartProgressBar();
@@ -244,87 +244,84 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
 
     switch (message)
     {
-    case WM_INITDIALOG:
-        comboCPU = GetDlgItem(hDlg, IDC_COMBO_CPU); // Slojil sum Sort=False
-        comboGPU = GetDlgItem(hDlg, IDC_COMBO_GPU); 
-        comboRAM = GetDlgItem(hDlg, IDC_COMBO_RAM); 
-        comboMotherboard = GetDlgItem(hDlg, IDC_COMBO_MOTHERBOARD);
-        comboSSD = GetDlgItem(hDlg, IDC_COMBO_SSD);
-        comboHDD = GetDlgItem(hDlg, IDC_COMBO_HDD);
-        comboPowerSupply = GetDlgItem(hDlg, IDC_COMBO_POWERSUPPLY);
-        comboCooling = GetDlgItem(hDlg, IDC_COMBO_COOLING);
-        comboCase = GetDlgItem(hDlg, IDC_COMBO_CASE);
-        comboOS = GetDlgItem(hDlg, IDC_COMBO_OS);
-        listBoxSelected = GetDlgItem(hDlg, IDC_LIST1);
-        progressBar = GetDlgItem(hDlg, IDC_PROGRESS1);
-        checkboxBluetooth = GetDlgItem(hDlg, IDC_CHECK_BLUETOOTH);
-        checkboxInsurance = GetDlgItem(hDlg, IDC_CHECK_INSURANCE);
-        editCustomMessage = GetDlgItem(hDlg, IDC_EDIT_CUSTOMMESSAGE);
-        buttonCalculate = GetDlgItem(hDlg, IDC_BUTTON_CALCULATE);
-        staticResult = GetDlgItem(hDlg, IDC_STATIC_RESULT);
-        buttonReset = GetDlgItem(hDlg, IDC_BUTTON_RESET);
+        case WM_INITDIALOG:
+            comboCPU = GetDlgItem(hDlg, IDC_COMBO_CPU); // set Sort=False
+            comboGPU = GetDlgItem(hDlg, IDC_COMBO_GPU); 
+            comboRAM = GetDlgItem(hDlg, IDC_COMBO_RAM); 
+            comboMotherboard = GetDlgItem(hDlg, IDC_COMBO_MOTHERBOARD);
+            comboSSD = GetDlgItem(hDlg, IDC_COMBO_SSD);
+            comboHDD = GetDlgItem(hDlg, IDC_COMBO_HDD);
+            comboPowerSupply = GetDlgItem(hDlg, IDC_COMBO_POWERSUPPLY);
+            comboCooling = GetDlgItem(hDlg, IDC_COMBO_COOLING);
+            comboCase = GetDlgItem(hDlg, IDC_COMBO_CASE);
+            comboOS = GetDlgItem(hDlg, IDC_COMBO_OS);
+            listBoxSelected = GetDlgItem(hDlg, IDC_LIST1);
+            progressBar = GetDlgItem(hDlg, IDC_PROGRESS1);
+            checkboxBluetooth = GetDlgItem(hDlg, IDC_CHECK_BLUETOOTH);
+            checkboxInsurance = GetDlgItem(hDlg, IDC_CHECK_INSURANCE);
+            editCustomMessage = GetDlgItem(hDlg, IDC_EDIT_CUSTOMMESSAGE);
+            buttonCalculate = GetDlgItem(hDlg, IDC_BUTTON_CALCULATE);
+            staticResult = GetDlgItem(hDlg, IDC_STATIC_RESULT);
+            buttonReset = GetDlgItem(hDlg, IDC_BUTTON_RESET);
 
-        PopulateComboBoxesWithTheData(); // Populate combo boxes with example options
-        break;
+            PopulateComboBoxesWithTheData();
+            break;
 
-    case WM_COMMAND:
+        case WM_COMMAND:
+             if (LOWORD(wParam) == IDC_BUTTON_CALCULATE) 
+             {
+                SendMessage(listBoxSelected, LB_RESETCONTENT, 0, 0); // Clear the listbox
 
-         if (LOWORD(wParam) == IDC_BUTTON_CALCULATE) 
-         {
-            SendMessage(listBoxSelected, LB_RESETCONTENT, 0, 0); // Clear the listbox
+                double totalPrice = CalculateTotalPrice();
 
-            double totalPrice = CalculateTotalPrice(); // Calculate total price
+                if (totalPrice == 0)
+                {
+                    MessageBox(hDlg, L"Please select at least one component.", L"Error", MB_OK | MB_ICONWARNING);
+                }
+                else
+                {
+                    // Add the Additional Info from the edit control to the listbox
+                    wchar_t buffer[256];
+                    GetWindowText(editCustomMessage, buffer, sizeof(buffer) / sizeof(buffer[0]));
+                    if (wcslen(buffer) > 0) {
+                        SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"[Additional information] :"));
+                        SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));
+                    }
 
-            if (totalPrice == 0)
-            {
-                MessageBox(hDlg, L"Please select at least one component.", L"Error", MB_OK | MB_ICONWARNING);
+                    StartProgressBar(); // Start the progress bar simulation
+
+                    // Display the total price in the static text control
+                    wchar_t resultText[256];
+                    swprintf_s(resultText, L"Total Price: $%.2f", totalPrice);
+                    SetWindowText(staticResult, resultText);
+                }
+             }
+            else if (LOWORD(wParam) == IDCANCEL) // Handle the Close button
+            { 
+                if (MessageBox(hDlg, L"Are you sure you want to exit?", L"Confirmation", MB_YESNO | MB_ICONQUESTION) == IDYES) 
+                {
+                   EndDialog(hDlg, IDCANCEL);
+                }
+            } 
+            else if (LOWORD(wParam) == IDC_BUTTON_RESET) // Handle the Reset button
+            { 
+                ResetAllFields();
             }
-            else
-            {
-                // Add the Additional Info from the edit control to the listbox
-                wchar_t buffer[256];
-                GetWindowText(editCustomMessage, buffer, sizeof(buffer) / sizeof(buffer[0]));
-                if (wcslen(buffer) > 0) {
-                    SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"[Additional information] :"));
-                    SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));
+            else if (LOWORD(wParam) == IDC_BUTTON_SAVE) // Save the listbox data into a file
+            { 
+                std::wstring listBoxContent;
+
+                int itemCount = SendMessage(listBoxSelected, LB_GETCOUNT, 0, 0);
+                for (int i = 0; i < itemCount; ++i)
+                {
+                    wchar_t buffer[256];
+                    SendMessage(listBoxSelected, LB_GETTEXT, i, reinterpret_cast<LPARAM>(buffer));
+                    listBoxContent += buffer;
+                    listBoxContent += L"\r\n";
                 }
 
-                StartProgressBar(); // Start the progress bar simulation
-
-                // Display the total price in the static text control
-                wchar_t resultText[256];
-                swprintf_s(resultText, L"Total Price: $%.2f", totalPrice);
-                SetWindowText(staticResult, resultText);
+                SaveToFile(hDlg, listBoxContent.c_str(), L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
             }
-         }
-        else if (LOWORD(wParam) == IDCANCEL) // Handle the Close button
-        { 
-            if (MessageBox(hDlg, L"Are you sure you want to exit?", L"Confirmation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
-               EndDialog(hDlg, IDCANCEL);
-            }
-        } 
-        else if (LOWORD(wParam) == IDC_BUTTON_RESET) // Handle the Reset button
-        { 
-            ResetAllFields();
-        }
-        else if (LOWORD(wParam) == IDC_BUTTON_SAVE) // Save listbox data into a file
-        { 
-            std::wstring listBoxContent;
-
-            int itemCount = SendMessage(listBoxSelected, LB_GETCOUNT, 0, 0);
-            for (int i = 0; i < itemCount; ++i)
-            {
-                wchar_t buffer[256];
-                SendMessage(listBoxSelected, LB_GETTEXT, i, reinterpret_cast<LPARAM>(buffer));
-                listBoxContent += buffer;
-                listBoxContent += L"\r\n";  // Add a newline between items
-            }
-
-            // Save content to the specified file
-            SaveToFile(hDlg, listBoxContent.c_str(), L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
-
-            break;
-        }
         break;
     }
 
@@ -346,7 +343,8 @@ void StartProgressBar()
     EnableWindow(buttonCalculate, FALSE); // Disable the Calculate button during the calculation
     SendMessage(progressBar, PBM_SETPOS, 0, 0); // Reset the progress bar to 0%
 
-    for (int i = 1; i <= 100; ++i) {
+    for (int i = 1; i <= 100; ++i) 
+    {
         SendMessage(progressBar, PBM_SETPOS, i, 0);  // Update progress bar
         Sleep(20); // Sleep for a short duration to simulate work
     }
@@ -453,8 +451,8 @@ double CalculateTotalPrice()
 
 void PopulateComboBoxesWithTheData()
 {
-    for (const auto& part : parts) {
-
+    for (const auto& part : parts) 
+    {
         std::wstringstream ss; // to format and manipulate strings
         ss << std::fixed << std::setprecision(2) << part.GetPrice(); // sets floating-point output to 2 decimal symbols
         std::wstring priceText = ss.str();
@@ -472,7 +470,8 @@ void PopulateComboBoxesWithTheData()
 
         std::wstring itemText = part.GetName() + L" - $" + priceText; // part.Name + part.Price
 
-        switch (part.GetPartType()) {
+        switch (part.GetPartType()) 
+        {
             case PartType::CPU:
                 cpuParts.push_back(part); // Add the part in its own PartType vector
                 SendMessage(comboCPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str())); // insert it in the combo box

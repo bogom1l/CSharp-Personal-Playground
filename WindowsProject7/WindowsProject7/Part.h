@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "PartType.h"  // Include the file with the enum definition
+#include "PartType.h"
 
 class Part {
 public:

@@ -2,13 +2,13 @@
 #include <windows.h>
 #include <CommCtrl.h>
 #include <string>
-#include "framework.h"
-#include "WindowsProject7.h"
 #include <unordered_map>
 #include <iomanip>  // For std::fixed and std::setprecision
 #include <sstream>  // For std::wstringstream
-#include "Part.h"  // Include the Part class definition
 #include <fstream>
+#include "Part.h"  // Include the Part class definition
+#include "framework.h"
+#include "WindowsProject7.h"
 
 #define MAX_LOADSTRING 100
 
@@ -19,6 +19,8 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult, checkboxBluetooth, checkboxInsurance, editCustomMessage, buttonReset,
     comboMotherboard, comboSSD, comboHDD, comboPowerSupply, comboCooling, comboCase, comboOS, listBoxSelected, progressBar;
 int fileCounter = 1;
+double BLUETOOTH_PRICE = 50.0;
+double INSURANCE_PRICE = 60.0;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -32,7 +34,7 @@ void StartProgressBar();
 double CalculateTotalPrice();
 void PopulateComboBoxesWithTheData();
 void ResetAllFields();
-void SaveToFile(HWND hWnd, const wchar_t* content, const wchar_t* fileName, const wchar_t* filter);
+void SaveToFile(HWND hWnd, const wchar_t* content, const wchar_t* filter);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -267,9 +269,9 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
 
     case WM_COMMAND:
 
-         if (LOWORD(wParam) == IDC_BUTTON_CALCULATE) {
-
-            SendMessage(listBoxSelected, LB_RESETCONTENT, 0, 0); // Clear the ListBox
+         if (LOWORD(wParam) == IDC_BUTTON_CALCULATE) 
+         {
+            SendMessage(listBoxSelected, LB_RESETCONTENT, 0, 0); // Clear the listbox
 
             double totalPrice = CalculateTotalPrice(); // Calculate total price
 
@@ -279,7 +281,15 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             }
             else
             {
-                StartProgressBar(); // Start Progress bar
+                // Add the Additional Info from the edit control to the listbox
+                wchar_t buffer[256];
+                GetWindowText(editCustomMessage, buffer, sizeof(buffer) / sizeof(buffer[0]));
+                if (wcslen(buffer) > 0) {
+                    SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"[Additional information] :"));
+                    SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));
+                }
+
+                StartProgressBar(); // Start the progress bar simulation
 
                 // Display the total price in the static text control
                 wchar_t resultText[256];
@@ -287,20 +297,18 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
                 SetWindowText(staticResult, resultText);
             }
          }
-        else if (LOWORD(wParam) == IDCANCEL) { // Handle the Close button
-             if (MessageBox(hDlg, L"Are you sure you want to exit?", L"Confirmation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
-                EndDialog(hDlg, IDCANCEL);
-             }
+        else if (LOWORD(wParam) == IDCANCEL) // Handle the Close button
+        { 
+            if (MessageBox(hDlg, L"Are you sure you want to exit?", L"Confirmation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+               EndDialog(hDlg, IDCANCEL);
+            }
         } 
-        else if (LOWORD(wParam) == IDC_BUTTON_RESET) { // Handle the Reset button click
+        else if (LOWORD(wParam) == IDC_BUTTON_RESET) // Handle the Reset button
+        { 
             ResetAllFields();
         }
-        else if (LOWORD(wParam) == IDC_BUTTON_SAVE) { // Save listbox data into a file
-            
-            // Get the file name entered by the user
-            wchar_t buffer[MAX_PATH];
-
-            // Construct the content of the ListBox
+        else if (LOWORD(wParam) == IDC_BUTTON_SAVE) // Save listbox data into a file
+        { 
             std::wstring listBoxContent;
 
             int itemCount = SendMessage(listBoxSelected, LB_GETCOUNT, 0, 0);
@@ -313,8 +321,7 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             }
 
             // Save content to the specified file
-            SaveToFile(hDlg, listBoxContent.c_str(), buffer, L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
-
+            SaveToFile(hDlg, listBoxContent.c_str(), L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
 
             break;
         }
@@ -350,8 +357,7 @@ void StartProgressBar()
 
 double CalculateTotalPrice()
 {
-    // Get the selected options from combo boxes
-    int indexCPU = SendMessage(comboCPU, CB_GETCURSEL, 0, 0);
+    int indexCPU = SendMessage(comboCPU, CB_GETCURSEL, 0, 0); // provide the index of the currently selected item from the CPU COMBO BOX
     int indexGPU = SendMessage(comboGPU, CB_GETCURSEL, 0, 0);
     int indexRAM = SendMessage(comboRAM, CB_GETCURSEL, 0, 0);
     int indexMotherboard = SendMessage(comboMotherboard, CB_GETCURSEL, 0, 0);
@@ -373,44 +379,54 @@ double CalculateTotalPrice()
     double casePrice = 0;
     double osPrice = 0;
 
-    // if any selection is made
-    if (indexCPU != CB_ERR && indexCPU < parts.size()) {
+    // Get the selected options from combo boxes
+    if (indexCPU != CB_ERR && indexCPU < parts.size()) 
+    {
         cpuPrice = cpuParts[indexCPU].GetPrice();
         AddComponentToListBox(listBoxSelected, L"CPU", cpuParts[indexCPU].GetName(), cpuParts[indexCPU].GetPrice());
     }        
-    if (indexGPU != CB_ERR && indexGPU < parts.size()) {
+    if (indexGPU != CB_ERR && indexGPU < parts.size()) 
+    {
         gpuPrice = gpuParts[indexGPU].GetPrice();
         AddComponentToListBox(listBoxSelected, L"GPU", gpuParts[indexGPU].GetName(), gpuParts[indexGPU].GetPrice());
     }
-    if (indexRAM != CB_ERR && indexRAM < parts.size()) {
+    if (indexRAM != CB_ERR && indexRAM < parts.size()) 
+    {
         ramPrice = ramParts[indexRAM].GetPrice();
         AddComponentToListBox(listBoxSelected, L"RAM", ramParts[indexRAM].GetName(), ramParts[indexRAM].GetPrice());
     }
-    if (indexMotherboard != CB_ERR) {
+    if (indexMotherboard != CB_ERR) 
+    {
         motherboardPrice = motherboardParts[indexMotherboard].GetPrice();
         AddComponentToListBox(listBoxSelected, L"Motherboard", motherboardParts[indexMotherboard].GetName(), motherboardParts[indexMotherboard].GetPrice());
     }
-    if (indexSSD != CB_ERR) {
+    if (indexSSD != CB_ERR) 
+    {
         ssdPrice = ssdParts[indexSSD].GetPrice();
         AddComponentToListBox(listBoxSelected, L"SSD", ssdParts[indexSSD].GetName(), ssdParts[indexSSD].GetPrice());
     }
-    if (indexHDD != CB_ERR) {
+    if (indexHDD != CB_ERR) 
+    {
         hddPrice = hddParts[indexHDD].GetPrice();
         AddComponentToListBox(listBoxSelected, L"HDD", hddParts[indexHDD].GetName(), hddParts[indexHDD].GetPrice());
     }
-    if (indexPowersupply != CB_ERR) {
+    if (indexPowersupply != CB_ERR) 
+    {
         powersupplyPrice = powerSupplyParts[indexPowersupply].GetPrice();
         AddComponentToListBox(listBoxSelected, L"PowerSupply", powerSupplyParts[indexPowersupply].GetName(), powerSupplyParts[indexPowersupply].GetPrice());
     }
-    if (indexCooling != CB_ERR) {
+    if (indexCooling != CB_ERR) 
+    {
         coolingPrice = coolingParts[indexCooling].GetPrice();
         AddComponentToListBox(listBoxSelected, L"Cooling", coolingParts[indexCooling].GetName(), coolingParts[indexCooling].GetPrice());
     }
-    if (indexCase != CB_ERR) {
+    if (indexCase != CB_ERR) 
+    {
         casePrice = casesParts[indexCase].GetPrice();
         AddComponentToListBox(listBoxSelected, L"Case", casesParts[indexCase].GetName(), casesParts[indexCase].GetPrice());
     }
-    if (indexOS != CB_ERR) {
+    if (indexOS != CB_ERR) 
+    {
         osPrice = osParts[indexOS].GetPrice();
         AddComponentToListBox(listBoxSelected, L"OS", osParts[indexOS].GetName(), osParts[indexOS].GetPrice());
     }
@@ -420,23 +436,16 @@ double CalculateTotalPrice()
         + coolingPrice + casePrice + osPrice;
 
     // if Bluetooth checkbox is checked
-    if (SendMessage(checkboxBluetooth, BM_GETCHECK, 0, 0) == BST_CHECKED) {
-        totalPrice += 50.0;
-        AddComponentToListBox(listBoxSelected, L"Other", L"Bluetooth", 50.0);
+    if (SendMessage(checkboxBluetooth, BM_GETCHECK, 0, 0) == BST_CHECKED) 
+    {
+        totalPrice += BLUETOOTH_PRICE;
+        AddComponentToListBox(listBoxSelected, L"Other", L"Bluetooth", BLUETOOTH_PRICE);
     }
     // if Insurance checkbox is checked
-    if (SendMessage(checkboxInsurance, BM_GETCHECK, 0, 0) == BST_CHECKED) {
-        totalPrice += 60.0;
-        AddComponentToListBox(listBoxSelected, L"Other", L"Insurance", 60.0);
-    }
-
-    // Add additional info from edit control to the listbox
-    wchar_t buffer[256];
-    GetWindowText(editCustomMessage, buffer, sizeof(buffer) / sizeof(buffer[0]));
-
-    if (wcslen(buffer) > 0) {
-        SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"[Additional information] :"));
-        SendMessage(listBoxSelected, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(buffer));
+    if (SendMessage(checkboxInsurance, BM_GETCHECK, 0, 0) == BST_CHECKED) 
+    {
+        totalPrice += INSURANCE_PRICE;
+        AddComponentToListBox(listBoxSelected, L"Other", L"Insurance", INSURANCE_PRICE);
     }
 
     return totalPrice;
@@ -445,25 +454,28 @@ double CalculateTotalPrice()
 void PopulateComboBoxesWithTheData()
 {
     for (const auto& part : parts) {
-        std::wstringstream ss;
-        ss << std::fixed << std::setprecision(2) << part.GetPrice();
+
+        std::wstringstream ss; // to format and manipulate strings
+        ss << std::fixed << std::setprecision(2) << part.GetPrice(); // sets floating-point output to 2 decimal symbols
         std::wstring priceText = ss.str();
 
         // Ensure exactly 2 digits after the dot
-        size_t dotPos = priceText.find(L'.');
-        if (dotPos != std::wstring::npos && priceText.length() > dotPos + 2) {
+        size_t dotPos = priceText.find(L'.'); // finds the position of the dot
+        if (dotPos != std::wstring::npos && priceText.length() > dotPos + 2)  // if its found && if there are more than two digits after it
+        {
             priceText = priceText.substr(0, dotPos + 3);
-        } else {
+        } 
+        else 
+        {
             priceText += L".00";
         }
 
-        std::wstring itemText = part.GetName() + L" - $" + priceText;
+        std::wstring itemText = part.GetName() + L" - $" + priceText; // part.Name + part.Price
 
-        // Add the string to the respective combo box based on part type
         switch (part.GetPartType()) {
             case PartType::CPU:
-                cpuParts.push_back(part); // Add the part in its PartType Vector
-                SendMessage(comboCPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
+                cpuParts.push_back(part); // Add the part in its own PartType vector
+                SendMessage(comboCPU, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str())); // insert it in the combo box
                 break;
             case PartType::GPU:
                 gpuParts.push_back(part); 
@@ -501,7 +513,6 @@ void PopulateComboBoxesWithTheData()
                 osParts.push_back(part);
                 SendMessage(comboOS, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(itemText.c_str()));
                 break;
-            // Add similar cases for other part types
 
         }
     }
@@ -514,8 +525,6 @@ void ResetAllFields()
     SendMessage(comboRAM, CB_SETCURSEL, -1, 0);  
     SendMessage(checkboxBluetooth, BM_SETCHECK, BST_UNCHECKED, 0); 
     SendMessage(checkboxInsurance, BM_SETCHECK, BST_UNCHECKED, 0); 
-    SetWindowText(editCustomMessage, L"");  
-    SetWindowText(staticResult, L"Total Price: $0.00");  
     SendMessage(comboMotherboard, CB_SETCURSEL, -1, 0); 
     SendMessage(comboSSD, CB_SETCURSEL, -1, 0); 
     SendMessage(comboHDD, CB_SETCURSEL, -1, 0); 
@@ -524,12 +533,14 @@ void ResetAllFields()
     SendMessage(comboCase, CB_SETCURSEL, -1, 0); 
     SendMessage(comboOS, CB_SETCURSEL, -1, 0); 
     SendMessage(listBoxSelected, LB_RESETCONTENT, 0, 0);
+    SetWindowText(editCustomMessage, L"");  
+    SetWindowText(staticResult, L"Total Price: $0.00");  
 }
 
-void SaveToFile(HWND hWnd, const wchar_t* content, const wchar_t* fileName, const wchar_t* filter)
+void SaveToFile(HWND hWnd, const wchar_t* content, const wchar_t* filter)
 {
-    OPENFILENAME ofn;
-    wchar_t szFile[MAX_PATH];
+    OPENFILENAME ofn; // structure for the file dialog
+    wchar_t szFile[MAX_PATH]; 
 
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
@@ -544,13 +555,13 @@ void SaveToFile(HWND hWnd, const wchar_t* content, const wchar_t* fileName, cons
     ofn.lpstrInitialDir = NULL;
     ofn.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST;
 
-    if (GetSaveFileName(&ofn) == TRUE)
+    if (GetSaveFileName(&ofn) == TRUE) // displays "Save As" dialog and returns TRUE if user presses Save
     {
-        std::wofstream outFile(ofn.lpstrFile);
+        std::wofstream outFile(ofn.lpstrFile); // attempts to open a file
 
         if (outFile.is_open())
         {
-            outFile << content;
+            outFile << content; // writes the content in the file
             outFile.close();
             MessageBox(hWnd, L"Data saved successfully!", L"Save", MB_OK | MB_ICONINFORMATION);
         }

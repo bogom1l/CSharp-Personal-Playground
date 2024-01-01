@@ -1,1 +1,14 @@
-CPU: AMD Ryzen 7 - $250.00
+CPU: Intel i5 - $200.00
+GPU: NVIDIA RTX 3060 - $300.00
+RAM: 16GB DDR4 - $80.00
+Motherboard: ASUS ROG Strix B550-F Gaming - $250.00
+SSD: Samsung 970 EVO Plus 500GB (NVMe) - $170.00
+HDD: Western Digital Blue 4TB (5400 RPM) - $185.00
+PowerSupply: EVGA SuperNOVA 650 G5, 80 Plus Gold 650W - $60.00
+Cooling: Noctua NH-D15 (Air Cooling) - $30.00
+Case: NZXT H510i - $60.00
+OS: Windows 11 (Pro) - $100.00
+Other: Bluetooth - $50.00
+Other: Insurance - $60.00
+[Additional information] :
+information123123312asdasd

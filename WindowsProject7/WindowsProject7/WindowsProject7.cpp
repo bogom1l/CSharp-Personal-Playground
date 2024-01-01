@@ -32,7 +32,7 @@ void StartProgressBar();
 double CalculateTotalPrice();
 void PopulateComboBoxesWithTheData();
 void ResetAllFields();
-void SaveListBoxDataToFile();
+void SaveToFile(HWND hWnd, const wchar_t* content, const wchar_t* fileName, const wchar_t* filter);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -295,9 +295,30 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
         else if (LOWORD(wParam) == IDC_BUTTON_RESET) { // Handle the Reset button click
             ResetAllFields();
         }
-        else if (LOWORD(wParam) == IDC_BUTTON_SAVE) {
-            SaveListBoxDataToFile();
-            break; 
+        else if (LOWORD(wParam) == IDC_BUTTON_SAVE) { // Save listbox data into a file
+            
+            // Get the file name entered by the user
+            wchar_t buffer[MAX_PATH];
+            GetDlgItemText(hDlg, IDC_EDIT_FILENAME, buffer, MAX_PATH);
+
+            // Construct the content of the ListBox
+            std::wstring listBoxContent;
+
+            int itemCount = SendMessage(listBoxSelected, LB_GETCOUNT, 0, 0);
+            for (int i = 0; i < itemCount; ++i)
+            {
+                wchar_t buffer[256];
+                SendMessage(listBoxSelected, LB_GETTEXT, i, reinterpret_cast<LPARAM>(buffer));
+                listBoxContent += buffer;
+                listBoxContent += L"\r\n";  // Add a newline between items
+            }
+
+            // Save content to the specified file
+            //SaveToFile(GetParent(hDlg), listBoxContent.c_str(), buffer, L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
+            SaveToFile(hDlg, listBoxContent.c_str(), buffer, L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
+
+
+            break;
         }
         break;
     }
@@ -507,36 +528,37 @@ void ResetAllFields()
     SendMessage(listBoxSelected, LB_RESETCONTENT, 0, 0);
 }
 
-// Function to save ListBox data to a file with an incremented name
-void SaveListBoxDataToFile()
+void SaveToFile(HWND hWnd, const wchar_t* content, const wchar_t* fileName, const wchar_t* filter)
 {
-    // Construct the file name using the counter
-    std::wstring fileName = L"configuration" + std::to_wstring(fileCounter) + L".txt";
+    OPENFILENAME ofn;
+    wchar_t szFile[MAX_PATH];
 
-    // Open the file for writing
-    std::wofstream outFile(fileName);
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = hWnd;
+    ofn.lpstrFile = szFile;
+    ofn.lpstrFile[0] = '\0';
+    ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
+    ofn.lpstrFilter = filter;
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = NULL;
+    ofn.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST;
 
-    // Check if the file is successfully opened
-    if (!outFile)
+    if (GetSaveFileName(&ofn) == TRUE)
     {
-        MessageBox(nullptr, L"Failed to open file for writing", L"Error", MB_OK | MB_ICONERROR);
-        return;
+        std::wofstream outFile(ofn.lpstrFile);
+
+        if (outFile.is_open())
+        {
+            outFile << content;
+            outFile.close();
+            MessageBox(hWnd, L"Data saved successfully!", L"Save", MB_OK | MB_ICONINFORMATION);
+        }
+        else
+        {
+            MessageBox(hWnd, L"Error saving file", L"Error", MB_OK | MB_ICONERROR);
+        }
     }
-
-    // Iterate through ListBox items and write to file
-    int itemCount = SendMessage(listBoxSelected, LB_GETCOUNT, 0, 0);
-    for (int i = 0; i < itemCount; ++i)
-    {
-        wchar_t buffer[256];
-        SendMessage(listBoxSelected, LB_GETTEXT, i, reinterpret_cast<LPARAM>(buffer));
-        outFile << buffer << std::endl;
-    }
-
-    // Close the file
-    outFile.close();
-
-    // Increment the counter for the next file
-    ++fileCounter;
-
-    MessageBox(nullptr, L"Data saved successfully!", L"Save", MB_OK | MB_ICONINFORMATION);
 }

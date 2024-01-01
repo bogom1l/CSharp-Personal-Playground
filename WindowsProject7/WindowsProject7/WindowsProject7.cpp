@@ -3,10 +3,10 @@
 #include <windows.h> // for the file saving
 #include <CommCtrl.h> // for the progress bar
 #include <unordered_map> // for std::vector
-#include <iomanip>  // For std::fixed and std::setprecision
-#include <sstream>  // For std::wstringstream
+#include <iomanip>  // for std::fixed and std::setprecision
+#include <sstream>  // for std::wstringstream
 #include <fstream> // for the file saving
-#include "Part.h"  // Include the Part class definition
+#include "Part.h"  // include the Part class definition
 #include "framework.h"
 #include "WindowsProject7.h"
 
@@ -21,7 +21,6 @@ HWND comboCPU, comboGPU, comboRAM, buttonCalculate, staticResult, checkboxBlueto
      comboCooling, comboCase, comboOS, listBoxSelected, progressBar;
 double BLUETOOTH_PRICE = 50.0;
 double INSURANCE_PRICE = 60.0;
-int fileCounter = 1;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);

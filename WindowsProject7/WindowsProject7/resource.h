@@ -13,7 +13,6 @@
 #define IDC_WINDOWSPROJECT7             109
 #define IDR_MAINFRAME                   128
 #define IDD_CONFIGURATOR                129
-#define IDD_SAVE_DIALOG                 130
 #define IDC_COMBO_CPU                   1000
 #define IDC_COMBO_GPU                   1001
 #define IDC_COMBO_RAM                   1002
@@ -34,9 +33,6 @@
 #define IDC_LIST1                       1018
 #define IDC_PROGRESS1                   1019
 #define IDC_BUTTON_SAVE                 1020
-#define IDC_EDIT1                       1021
-#define IDC_EDIT_FILENAME               1021
-#define IDC_BUTTON_SAVE2                1022
 #define ID_FILE_PCCONFIGURATOR          32771
 #define IDM_CONFIGURATOR                32772
 #define IDC_STATIC                      -1

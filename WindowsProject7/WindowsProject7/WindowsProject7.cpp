@@ -299,7 +299,6 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             
             // Get the file name entered by the user
             wchar_t buffer[MAX_PATH];
-            GetDlgItemText(hDlg, IDC_EDIT_FILENAME, buffer, MAX_PATH);
 
             // Construct the content of the ListBox
             std::wstring listBoxContent;
@@ -314,7 +313,6 @@ INT_PTR CALLBACK PCConfiguratorDialog(HWND hDlg, UINT message, WPARAM wParam, LP
             }
 
             // Save content to the specified file
-            //SaveToFile(GetParent(hDlg), listBoxContent.c_str(), buffer, L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
             SaveToFile(hDlg, listBoxContent.c_str(), buffer, L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
 
 

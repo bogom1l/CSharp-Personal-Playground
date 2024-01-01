@@ -1,0 +1,10 @@
+CPU: Intel i9 - $400.00
+GPU: AMD Radeon RX 6700 XT - $400.00
+RAM: 32GB DDR4 - $150.00
+Motherboard: MSI MPG Z490 Gaming Edge WiFi - $350.00
+SSD: WD Black SN750 1TB (NVMe) - $190.00
+HDD: Western Digital Blue 4TB (5400 RPM) - $185.00
+PowerSupply: Corsair RM750x, 80 Plus Gold 750W - $85.00
+Cooling: NZXT Kraken X63 (Liquid Cooling) - $95.00
+Case: Phanteks Enthoo Pro - $120.00
+OS: None - $0.00

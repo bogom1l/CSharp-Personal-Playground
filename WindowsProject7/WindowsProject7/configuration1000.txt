@@ -1,0 +1,13 @@
+CPU: Intel i9 - $400.00
+GPU: NVIDIA RTX 3080 - $600.00
+RAM: 32GB DDR4 - $150.00
+Motherboard: Gigabyte B450 AORUS Elite - $210.00
+SSD: WD Black SN750 1TB (NVMe) - $190.00
+HDD: Western Digital Blue 4TB (5400 RPM) - $185.00
+PowerSupply: Corsair RM750x, 80 Plus Gold 750W - $85.00
+Cooling: NZXT Kraken X63 (Liquid Cooling) - $95.00
+Case: NZXT H510i - $60.00
+OS: Windows 11 (Pro) - $100.00
+Other: Insurance - $60.00
+[Additional information] :
+INFORMATION123123123

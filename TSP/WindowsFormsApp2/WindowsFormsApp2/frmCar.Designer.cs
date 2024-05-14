@@ -85,7 +85,7 @@
             this.btnMenuDelete.FlatAppearance.BorderSize = 0;
             this.btnMenuDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMenuDelete.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.btnMenuDelete.IconChar = FontAwesome.Sharp.IconChar.Trash;
+            this.btnMenuDelete.IconChar = FontAwesome.Sharp.IconChar.Receipt;
             this.btnMenuDelete.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(178)))), ((int)(((byte)(216)))), ((int)(((byte)(216)))));
             this.btnMenuDelete.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnMenuDelete.IconSize = 36;
@@ -95,7 +95,7 @@
             this.btnMenuDelete.Padding = new System.Windows.Forms.Padding(12, 0, 23, 0);
             this.btnMenuDelete.Size = new System.Drawing.Size(233, 69);
             this.btnMenuDelete.TabIndex = 15;
-            this.btnMenuDelete.Text = "Delete";
+            this.btnMenuDelete.Text = "Sell";
             this.btnMenuDelete.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnMenuDelete.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnMenuDelete.UseVisualStyleBackColor = true;
@@ -359,9 +359,9 @@
             this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(76)))), ((int)(((byte)(76)))));
             this.label4.Location = new System.Drawing.Point(23, 239);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(200, 13);
+            this.label4.Size = new System.Drawing.Size(135, 13);
             this.label4.TabIndex = 20;
-            this.label4.Text = "<- Update a car from the database";
+            this.label4.Text = "<- Update/Modify a car";
             // 
             // label3
             // 
@@ -370,9 +370,9 @@
             this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(76)))), ((int)(((byte)(76)))));
             this.label3.Location = new System.Drawing.Point(23, 308);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(197, 13);
+            this.label3.Size = new System.Drawing.Size(75, 13);
             this.label3.TabIndex = 19;
-            this.label3.Text = "<- Delete a car from the database";
+            this.label3.Text = "<- Sell a car";
             // 
             // label2
             // 
@@ -381,9 +381,9 @@
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(76)))), ((int)(((byte)(76)))));
             this.label2.Location = new System.Drawing.Point(23, 170);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(169, 13);
+            this.label2.Size = new System.Drawing.Size(76, 13);
             this.label2.TabIndex = 18;
-            this.label2.Text = "<- Add a car to the database";
+            this.label2.Text = "<- Add a car";
             // 
             // label1
             // 

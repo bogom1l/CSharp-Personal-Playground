@@ -56,7 +56,7 @@ namespace WindowsFormsApp2
             this.btnAdd.FlatAppearance.BorderSize = 2;
             this.btnAdd.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(65)))), ((int)(((byte)(72)))));
             this.btnAdd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAdd.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.btnAdd.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.btnAdd.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(178)))), ((int)(((byte)(216)))), ((int)(((byte)(216)))));
             this.btnAdd.IconChar = FontAwesome.Sharp.IconChar.None;
             this.btnAdd.IconColor = System.Drawing.Color.Black;
@@ -76,9 +76,9 @@ namespace WindowsFormsApp2
             this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.GridColor = System.Drawing.Color.White;
-            this.dataGridView1.Location = new System.Drawing.Point(58, 284);
+            this.dataGridView1.Location = new System.Drawing.Point(57, 284);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(529, 192);
+            this.dataGridView1.Size = new System.Drawing.Size(570, 193);
             this.dataGridView1.TabIndex = 62;
             // 
             // txtColor
@@ -132,40 +132,40 @@ namespace WindowsFormsApp2
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.label7.Location = new System.Drawing.Point(54, 175);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(153, 19);
+            this.label7.Size = new System.Drawing.Size(127, 17);
             this.label7.TabIndex = 76;
             this.label7.Text = "Price For Repair";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.label6.Location = new System.Drawing.Point(54, 104);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(54, 19);
+            this.label6.Size = new System.Drawing.Size(49, 17);
             this.label6.TabIndex = 75;
             this.label6.Text = "Seats";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.label1.Location = new System.Drawing.Point(238, 104);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(126, 19);
+            this.label1.Size = new System.Drawing.Size(106, 17);
             this.label1.TabIndex = 69;
             this.label1.Text = "License Plate";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.label5.Location = new System.Drawing.Point(423, 34);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(45, 19);
+            this.label5.Size = new System.Drawing.Size(42, 17);
             this.label5.TabIndex = 74;
             this.label5.Text = "Year";
             // 
@@ -180,21 +180,21 @@ namespace WindowsFormsApp2
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.label4.Location = new System.Drawing.Point(423, 104);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(54, 19);
+            this.label4.Size = new System.Drawing.Size(46, 17);
             this.label4.TabIndex = 73;
             this.label4.Text = "Color";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(76)))), ((int)(((byte)(76)))));
             this.label2.Location = new System.Drawing.Point(238, 34);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(54, 19);
+            this.label2.Size = new System.Drawing.Size(51, 17);
             this.label2.TabIndex = 71;
             this.label2.Text = "Model";
             // 
@@ -202,11 +202,11 @@ namespace WindowsFormsApp2
             // 
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(178)))), ((int)(((byte)(178)))));
-            this.label3.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(76)))), ((int)(((byte)(76)))));
             this.label3.Location = new System.Drawing.Point(54, 34);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(45, 19);
+            this.label3.Size = new System.Drawing.Size(46, 17);
             this.label3.TabIndex = 72;
             this.label3.Text = "Make";
             // 
@@ -218,7 +218,7 @@ namespace WindowsFormsApp2
             this.btnEmptyFields.FlatAppearance.BorderSize = 2;
             this.btnEmptyFields.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(65)))), ((int)(((byte)(72)))));
             this.btnEmptyFields.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnEmptyFields.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.btnEmptyFields.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.btnEmptyFields.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(178)))), ((int)(((byte)(216)))), ((int)(((byte)(216)))));
             this.btnEmptyFields.IconChar = FontAwesome.Sharp.IconChar.None;
             this.btnEmptyFields.IconColor = System.Drawing.Color.Black;

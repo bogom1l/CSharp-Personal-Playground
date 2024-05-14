@@ -1,12 +1,10 @@
 ﻿
 
-✔️ statistikite v dasboarda da gi napravq da izlizat i trite navednuj bez butoni
 
-[X] da se promeni cveta na butonchetata v Dashboard che imat gaden cvqt 
 
-[X] da se promeni main cveta na prilojenieto v po-svetyl
 
-[X] final clean up the code
+
+
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -15,6 +13,56 @@ Future Version:
 
 -da optimiziram turseneto, shtoto kato napisha da tursi Make "bmw" ili "bm" i to ne namira kolite koito sa "BMW"
 
--struva mi se che CreateCarTable() methoda bi trqbvalo da ima usage nqkude, shtoto v momenta nikude ne se polzva a vsichko si bachka ok :D
- *moje bi ako nqmahme baza danni i trqbvashe da se suzdade tablicata Car nanovo, togava shtqhme da go polzvame. 
-  => pri chovek bez Database.db file-a nqma da trugne celiqt proekt bez tozi method.
+-pri chovek bez Database.db file-a nqma da trugne celiqt proekt bez CreateCarTable().
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+  [[[[[[   archive::   ]]]]]]
+
+
+
+
+
+  //TODO
+        // Query: Minimal and maximal repair price
+        public string GetOverallMinMaxPriceForRepair()
+        {
+            StringBuilder result = new StringBuilder();
+
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                SELECT MIN(priceForRepairing) AS MinimalPrice, MAX(priceForRepairing) AS MaximalPrice
+                FROM Car;";
+
+                using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        result.AppendLine($"Overall Minimal Price: {reader["MinimalPrice"]}, {Environment.NewLine}" +
+                                          $"Overall Maximal Price: {reader["MaximalPrice"]}");
+                    }
+                }
+            }
+
+            return result.ToString();
+        }

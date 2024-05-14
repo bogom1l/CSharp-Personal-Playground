@@ -25,6 +25,7 @@
             leftBorderBtn = new Panel();
             leftBorderBtn.Size = new Size(7, 60);
             panelMenu.Controls.Add(leftBorderBtn);
+
             // Form
             Text = string.Empty;
             ControlBox = false;
@@ -32,7 +33,7 @@
             MaximizedBounds = Screen.FromHandle(Handle).WorkingArea;
         }
 
-        // *** PANEL BUTTONS *** //
+        // PANEL BUTTONS
         private void ActivateButton(object senderBtn, Color color)
         {
             if (senderBtn != null)
@@ -40,7 +41,7 @@
                 DisableButton();
                 // Button
                 currentBtn = (IconButton)senderBtn;
-                currentBtn.BackColor = Color.FromArgb(0, 102, 102);
+                currentBtn.BackColor = Color.FromArgb(0, 102, 152);
                 currentBtn.ForeColor = color;
                 currentBtn.TextAlign = ContentAlignment.MiddleCenter;
                 currentBtn.IconColor = color;

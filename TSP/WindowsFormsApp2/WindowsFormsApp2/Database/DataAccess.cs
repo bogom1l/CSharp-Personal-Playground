@@ -11,8 +11,6 @@
         private readonly string connectionString =
             "Data Source=C:\\Users\\wavepc\\Documents\\My Git Repos\\CSharp-Personal-Playground\\TSP\\WindowsFormsApp2\\Database.db;Version=3;";
 
-            //"Data Source=C:\\Users\\vasil\\Desktop\\USP-Project-main\\WindowsFormsApp2\\Database.db;Version=3;";
-
         public void CreateCarTable()
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
@@ -264,34 +262,6 @@
             }
 
             return filteredCars;
-        }
-
-
-        // Query: Minimal and maximal repair price
-        public string GetOverallMinMaxPriceForRepair()
-        {
-            StringBuilder result = new StringBuilder();
-
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = @"
-                SELECT MIN(priceForRepairing) AS MinimalPrice, MAX(priceForRepairing) AS MaximalPrice
-                FROM Car;";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                using (SQLiteDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        result.AppendLine($"Overall Minimal Price: {reader["MinimalPrice"]}, {Environment.NewLine}" +
-                                          $"Overall Maximal Price: {reader["MaximalPrice"]}");
-                    }
-                }
-            }
-
-            return result.ToString();
         }
 
 

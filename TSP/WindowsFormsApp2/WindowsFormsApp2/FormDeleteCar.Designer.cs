@@ -44,7 +44,7 @@ namespace WindowsFormsApp2
             this.dataGridView1.GridColor = System.Drawing.Color.White;
             this.dataGridView1.Location = new System.Drawing.Point(58, 210);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(529, 192);
+            this.dataGridView1.Size = new System.Drawing.Size(613, 263);
             this.dataGridView1.TabIndex = 80;
             // 
             // txtLicensePlate
@@ -58,10 +58,10 @@ namespace WindowsFormsApp2
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.label1.Location = new System.Drawing.Point(54, 63);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(135, 19);
+            this.label1.Size = new System.Drawing.Size(111, 17);
             this.label1.TabIndex = 86;
             this.label1.Text = "License Plate:";
             // 
@@ -72,7 +72,7 @@ namespace WindowsFormsApp2
             this.btnDelete.FlatAppearance.BorderSize = 2;
             this.btnDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(65)))), ((int)(((byte)(72)))));
             this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDelete.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.btnDelete.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.btnDelete.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(178)))), ((int)(((byte)(216)))), ((int)(((byte)(216)))));
             this.btnDelete.IconChar = FontAwesome.Sharp.IconChar.None;
             this.btnDelete.IconColor = System.Drawing.Color.Black;
@@ -83,7 +83,7 @@ namespace WindowsFormsApp2
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(160, 30);
             this.btnDelete.TabIndex = 95;
-            this.btnDelete.Text = "Delete";
+            this.btnDelete.Text = "Sell";
             this.btnDelete.UseVisualStyleBackColor = false;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
@@ -94,7 +94,7 @@ namespace WindowsFormsApp2
             this.btnSearch.FlatAppearance.BorderSize = 2;
             this.btnSearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(65)))), ((int)(((byte)(72)))));
             this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSearch.Font = new System.Drawing.Font("Roboto Mono Medium", 10F, System.Drawing.FontStyle.Bold);
+            this.btnSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
             this.btnSearch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(178)))), ((int)(((byte)(216)))), ((int)(((byte)(216)))));
             this.btnSearch.IconChar = FontAwesome.Sharp.IconChar.None;
             this.btnSearch.IconColor = System.Drawing.Color.Black;

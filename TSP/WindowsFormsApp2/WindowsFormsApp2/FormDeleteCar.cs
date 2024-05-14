@@ -22,7 +22,7 @@
         {
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                DialogResult result = MessageBox.Show("Are you sure you want to delete this car?", "Confirm",
+                DialogResult result = MessageBox.Show("Confrim selling this car?", "Confirm",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
@@ -36,7 +36,7 @@
             }
             else
             {
-                MessageBox.Show("Please select a car to delete.");
+                MessageBox.Show("Please select a car to sell.");
             }
         }
 

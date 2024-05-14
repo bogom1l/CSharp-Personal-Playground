@@ -9,9 +9,10 @@
     public class DataAccess
     {
         private readonly string connectionString =
-            //"Data Source=D:\\DEVELOPER PROJECTS\\VS Projects\\Databases\\Database.db;Version=3;";
+            "Data Source=C:\\Users\\wavepc\\Documents\\My Git Repos\\CSharp-Personal-Playground\\TSP\\WindowsFormsApp2\\Database.db;Version=3;";
 
-        // -------------- Creating the tables --------------
+            //"Data Source=C:\\Users\\vasil\\Desktop\\USP-Project-main\\WindowsFormsApp2\\Database.db;Version=3;";
+
         public void CreateCarTable()
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
@@ -35,53 +36,6 @@
                 }
             }
         }
-
-        public void CreateClientTable()
-        {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = "CREATE TABLE IF NOT EXISTS Client (" +
-                               "id INTEGER PRIMARY KEY, " +
-                               "name TEXT, " +
-                               "numberOfPersonalID INTEGER, " +
-                               "city TEXT, " +
-                               "address TEXT, " +
-                               "phone TEXT" +
-                               ")";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public void CreateRepairTable()
-        {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = "CREATE TABLE IF NOT EXISTS Repair (" +
-                               "id INTEGER PRIMARY KEY, " +
-                               "carId INTEGER, " +
-                               "clientId INTEGER, " +
-                               "dateOfStartingRepair TEXT, " +
-                               "dateOfFinishingRepair TEXT, " +
-                               "isPaid BOOLEAN, " +
-                               "isReturned BOOLEAN" +
-                               ")";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        // -------------- Car --------------  
 
         public List<Car> GetAllCars()
         {
@@ -185,287 +139,135 @@
             }
         }
 
-        public bool CarExists(int carId)
+        public void DeleteAllCars()
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
-                string query = "SELECT COUNT(*) FROM Car WHERE id = @CarId";
+                string query = "DELETE FROM Car";
 
                 using (SQLiteCommand command = new SQLiteCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@CarId", carId);
-
-                    int count = Convert.ToInt32(command.ExecuteScalar());
-
-                    return count > 0;
+                    command.ExecuteNonQuery();
                 }
             }
         }
 
-
-        // -------------- Client -------------- 
-
-        public List<Client> GetAllClients()
+        public List<Car> GetFilteredCars(string licensePlate, string model, string make, string color, string year,
+            string seats, string priceForRepairing)
         {
-            List<Client> clients = new List<Client>();
+            List<Car> filteredCars = new List<Car>();
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
-                string query = "SELECT * FROM Client";
+                StringBuilder queryBuilder = new StringBuilder("SELECT * FROM Car WHERE 1=1");
+
+
+                if (!string.IsNullOrEmpty(licensePlate))
+                {
+                    queryBuilder.Append(" AND licensePlate = @LicensePlate");
+                }
+
+                if (!string.IsNullOrEmpty(make))
+                {
+                    queryBuilder.Append(" AND make = @Make");
+                }
+
+                if (!string.IsNullOrEmpty(model))
+                {
+                    queryBuilder.Append(" AND model = @Model");
+                }
+
+                if (!string.IsNullOrEmpty(color))
+                {
+                    queryBuilder.Append(" AND color = @Color");
+                }
+
+                if (!string.IsNullOrEmpty(year))
+                {
+                    queryBuilder.Append(" AND year = @Year");
+                }
+
+                if (!string.IsNullOrEmpty(seats))
+                {
+                    queryBuilder.Append(" AND seats = @Seats");
+                }
+
+                if (!string.IsNullOrEmpty(priceForRepairing))
+                {
+                    queryBuilder.Append(" AND priceForRepairing = @PriceForRepairing");
+                }
+
+                string query = queryBuilder.ToString();
 
                 using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                using (SQLiteDataReader reader = command.ExecuteReader())
                 {
-                    while (reader.Read())
+                    if (!string.IsNullOrEmpty(licensePlate))
                     {
-                        Client client = new Client
+                        command.Parameters.AddWithValue("@LicensePlate", licensePlate);
+                    }
+
+                    if (!string.IsNullOrEmpty(make))
+                    {
+                        command.Parameters.AddWithValue("@Make", make);
+                    }
+
+                    if (!string.IsNullOrEmpty(model))
+                    {
+                        command.Parameters.AddWithValue("@Model", model);
+                    }
+
+                    if (!string.IsNullOrEmpty(color))
+                    {
+                        command.Parameters.AddWithValue("@Color", color);
+                    }
+
+                    if (!string.IsNullOrEmpty(year))
+                    {
+                        command.Parameters.AddWithValue("@Year", year);
+                    }
+
+                    if (!string.IsNullOrEmpty(seats))
+                    {
+                        command.Parameters.AddWithValue("@Seats", seats);
+                    }
+
+                    if (!string.IsNullOrEmpty(priceForRepairing))
+                    {
+                        command.Parameters.AddWithValue("@PriceForRepairing", priceForRepairing);
+                    }
+
+
+                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
                         {
-                            Id = Convert.ToInt32(reader["id"]),
-                            Name = Convert.ToString(reader["name"]),
-                            NumberOfPersonalID = Convert.ToInt32(reader["numberOfPersonalID"]),
-                            City = Convert.ToString(reader["city"]),
-                            Address = Convert.ToString(reader["address"]),
-                            Phone = Convert.ToString(reader["phone"])
-                        };
+                            Car car = new Car
+                            {
+                                Id = Convert.ToInt32(reader["id"]),
+                                LicensePlate = Convert.ToString(reader["licensePlate"]),
+                                Model = Convert.ToString(reader["model"]),
+                                Make = Convert.ToString(reader["make"]),
+                                Color = Convert.ToString(reader["color"]),
+                                Year = Convert.ToInt32(reader["year"]),
+                                Seats = Convert.ToInt32(reader["seats"]),
+                                PriceForRepairing = Convert.ToDouble(reader["priceForRepairing"])
+                            };
 
-                        clients.Add(client);
+                            filteredCars.Add(car);
+                        }
                     }
                 }
             }
 
-            return clients;
-        }
-
-        public void CreateClient(Client client)
-        {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = "INSERT INTO Client (name, numberOfPersonalID, city, address, phone) " +
-                               "VALUES (@Name, @NumberOfPersonalID, @City, @Address, @Phone)";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Name", client.Name);
-                    command.Parameters.AddWithValue("@NumberOfPersonalID", client.NumberOfPersonalID);
-                    command.Parameters.AddWithValue("@City", client.City);
-                    command.Parameters.AddWithValue("@Address", client.Address);
-                    command.Parameters.AddWithValue("@Phone", client.Phone);
-
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public void UpdateClient(Client client)
-        {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = "UPDATE Client SET name = @Name, numberOfPersonalID = @NumberOfPersonalID, " +
-                               "city = @City, address = @Address, phone = @Phone WHERE id = @Id";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Name", client.Name);
-                    command.Parameters.AddWithValue("@NumberOfPersonalID", client.NumberOfPersonalID);
-                    command.Parameters.AddWithValue("@City", client.City);
-                    command.Parameters.AddWithValue("@Address", client.Address);
-                    command.Parameters.AddWithValue("@Phone", client.Phone);
-                    command.Parameters.AddWithValue("@Id", client.Id);
-
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public void DeleteClient(int clientId)
-        {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = "DELETE FROM Client WHERE id = @Id";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Id", clientId);
-
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public bool ClientExists(int clientId)
-        {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = "SELECT COUNT(*) FROM Client WHERE id = @ClientId";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@ClientId", clientId);
-
-                    int count = Convert.ToInt32(command.ExecuteScalar());
-
-                    return count > 0;
-                }
-            }
+            return filteredCars;
         }
 
 
-        // -------------- Repair -------------- 
-
-        public List<Repair> GetAllRepairs()
-        {
-            List<Repair> repairs = new List<Repair>();
-
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = "SELECT * FROM Repair";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                using (SQLiteDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        Repair repair = new Repair
-                        {
-                            Id = Convert.ToInt32(reader["id"]),
-                            CarId = Convert.ToInt32(reader["carId"]),
-                            ClientId = Convert.ToInt32(reader["clientId"]),
-                            DateOfStartingRepair = Convert.ToString(reader["dateOfStartingRepair"]),
-                            DateOfFinishingRepair = Convert.ToString(reader["dateOfFinishingRepair"]),
-                            IsPaid = Convert.ToBoolean(reader["isPaid"]),
-                            IsReturned = Convert.ToBoolean(reader["isReturned"])
-                        };
-
-                        repairs.Add(repair);
-                    }
-                }
-            }
-
-            return repairs;
-        }
-
-        public void CreateRepair(Repair repair)
-        {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query =
-                    "INSERT INTO Repair (carId, clientId, dateOfStartingRepair, dateOfFinishingRepair, isPaid, isReturned) " +
-                    "VALUES (@CarId, @ClientId, @DateOfStartingRepair, @DateOfFinishingRepair, @IsPaid, @IsReturned)";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@CarId", repair.CarId);
-                    command.Parameters.AddWithValue("@ClientId", repair.ClientId);
-                    command.Parameters.AddWithValue("@DateOfStartingRepair", repair.DateOfStartingRepair);
-                    command.Parameters.AddWithValue("@DateOfFinishingRepair", repair.DateOfFinishingRepair);
-                    command.Parameters.AddWithValue("@IsPaid", repair.IsPaid);
-                    command.Parameters.AddWithValue("@IsReturned", repair.IsReturned);
-
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public void UpdateRepair(Repair repair)
-        {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = "UPDATE Repair SET carId = @CarId, clientId = @ClientId, " +
-                               "dateOfStartingRepair = @DateOfStartingRepair, " +
-                               "dateOfFinishingRepair = @DateOfFinishingRepair, " +
-                               "isPaid = @IsPaid, isReturned = @IsReturned WHERE carId = @CarId";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@CarId", repair.CarId);
-                    command.Parameters.AddWithValue("@ClientId", repair.ClientId);
-                    command.Parameters.AddWithValue("@DateOfStartingRepair", repair.DateOfStartingRepair);
-                    command.Parameters.AddWithValue("@DateOfFinishingRepair", repair.DateOfFinishingRepair);
-                    command.Parameters.AddWithValue("@IsPaid", repair.IsPaid);
-                    command.Parameters.AddWithValue("@IsReturned", repair.IsReturned);
-
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public void DeleteRepair(int repairId)
-        {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = "DELETE FROM Repair WHERE id = @Id";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Id", repairId);
-
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-
-        // ------- Queries --------
-
-
-        // Select 1: All clients who left their cars for repair in the last 24 hours, ordered by car make and ascending car license plate
-        public string GetAllClientsWithCarsForRepairLast24Hours()
-        {
-            StringBuilder result = new StringBuilder();
-            result.AppendLine(
-                $"All clients who left their cars for repair in the last 24 hours, ordered by car make and ascending car license plate: {Environment.NewLine}");
-
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = @"
-                    SELECT C.name AS ClientName, R.dateOfStartingRepair, R.dateOfFinishingRepair, Ca.make AS CarMake, Ca.licensePlate AS CarLicensePlate
-                    FROM Client C
-                    JOIN Repair R ON C.id = R.clientId
-                    JOIN Car Ca ON R.carId = Ca.id
-                    WHERE R.dateOfStartingRepair >= datetime('now', '-1 day')
-                    ORDER BY Ca.make, Ca.licensePlate ASC;";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                using (SQLiteDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        result.AppendLine(
-                            $"Client Name: {reader["ClientName"]}, " +
-                            $"Start Date: {reader["dateOfStartingRepair"]}, " +
-                            $"End Date: {reader["dateOfFinishingRepair"]}, " +
-                            $"Car Make: {reader["CarMake"]}, " +
-                            $"Car License Plate: {reader["CarLicensePlate"]}");
-                    }
-                }
-            }
-
-            return result.ToString();
-        }
-
-        // Select 2: Minimal and maximal repair price
+        // Query: Minimal and maximal repair price
         public string GetOverallMinMaxPriceForRepair()
         {
             StringBuilder result = new StringBuilder();
@@ -492,139 +294,35 @@
             return result.ToString();
         }
 
-        // Select 3: All unpaid repaired cars
-        public string GetUnpaidRepairedCars()
+
+        public List<double> GetCarPrices()
         {
-            StringBuilder result = new StringBuilder();
-            result.AppendLine($"All unpaid repaired cars: {Environment.NewLine}");
+            List<double> carPrices = new List<double>();
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
-                string query = @"
-                SELECT C.*, R.*
-                FROM Car C
-                JOIN Repair R ON C.id = R.carId
-                WHERE R.isPaid = 0;";
-
+                string query = "SELECT PriceForRepairing FROM Car";
                 using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                using (SQLiteDataReader reader = command.ExecuteReader())
                 {
-                    while (reader.Read())
+                    using (SQLiteDataReader reader = command.ExecuteReader())
                     {
-                        result.AppendLine($"Car Id: {reader["id"]}, " +
-                                          $"License Plate: {reader["licensePlate"]}, " +
-                                          $"Model: {reader["model"]}, " +
-                                          $"Make: {reader["make"]}, " +
-                                          $"IsPaid: {reader["isPaid"]}");
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(0))
+                            {
+                                double price = reader.GetDouble(0);
+                                carPrices.Add(price);
+                            }
+                        }
                     }
                 }
+
+                connection.Close();
             }
 
-            return result.ToString();
-        }
-
-        // Select 4: All paid repaired cars
-        public string GetPaidRepairedCars()
-        {
-            StringBuilder result = new StringBuilder();
-            result.AppendLine($"All paid repaired cars: {Environment.NewLine}");
-
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = @"
-                SELECT C.*, R.*
-                FROM Car C
-                JOIN Repair R ON C.id = R.carId
-                WHERE R.isPaid = 1;";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                using (SQLiteDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        result.AppendLine($"Car Id: {reader["id"]}, " +
-                                          $"License Plate: {reader["licensePlate"]}, " +
-                                          $"Model: {reader["model"]}, " +
-                                          $"Make: {reader["make"]}, " +
-                                          $"IsPaid: {reader["isPaid"]}");
-                    }
-                }
-            }
-
-            return result.ToString();
-        }
-
-        // Select 5: Top 3 most frequently repaired cars
-        public string GetTop3MostFrequentlyRepairedCars()
-        {
-            StringBuilder result = new StringBuilder();
-            result.AppendLine($"Top 3 most frequently repaired cars: {Environment.NewLine}");
-
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = @"
-                SELECT C.*, COUNT(*) AS repairCount
-                FROM Car C
-                JOIN Repair R ON C.id = R.carId
-                GROUP BY C.id
-                ORDER BY repairCount DESC
-                LIMIT 3;";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                using (SQLiteDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        result.AppendLine($"Car Id: {reader["id"]}, " +
-                                          $"License Plate: {reader["licensePlate"]}, " +
-                                          $"Model: {reader["model"]}, " +
-                                          $"Make: {reader["make"]}, " +
-                                          $"Repair Count: {reader["repairCount"]}");
-                    }
-                }
-            }
-
-            return result.ToString();
-        }
-
-        // Select 6: Top 1 client who spent the most money on repairing cars
-        public string GetTop1ClientSpentMostMoneyOnRepairs()
-        {
-            StringBuilder result = new StringBuilder();
-            result.AppendLine($"Top 1 client who spent the most money on repairing cars: {Environment.NewLine}");
-
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = @"
-                SELECT C.name, C.phone, SUM(Ca.priceForRepairing) AS totalSpent
-                FROM Client C
-                JOIN Repair R ON C.id = R.clientId
-                JOIN Car Ca ON R.carId = Ca.id
-                GROUP BY C.id
-                ORDER BY totalSpent DESC
-                LIMIT 1;";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                using (SQLiteDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        result.AppendLine($"Client Name: {reader["name"]}, " +
-                                          $"Phone: {reader["phone"]}, " +
-                                          $"Total Spent: {reader["totalSpent"]}");
-                    }
-                }
-            }
-
-            return result.ToString();
+            return carPrices;
         }
     }
 }

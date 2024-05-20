@@ -2,67 +2,8 @@
 
 
 
-
-
-
-
------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------
-
+---------------
 Future Version:
 
 -da optimiziram turseneto, shtoto kato napisha da tursi Make "bmw" ili "bm" i to ne namira kolite koito sa "BMW"
-
 -pri chovek bez Database.db file-a nqma da trugne celiqt proekt bez CreateCarTable().
-
-
-
-
-
-
-
-
-
-
-
------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------
-
-  [[[[[[   archive::   ]]]]]]
-
-
-
-
-
-  //TODO
-        // Query: Minimal and maximal repair price
-        public string GetOverallMinMaxPriceForRepair()
-        {
-            StringBuilder result = new StringBuilder();
-
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-
-                string query = @"
-                SELECT MIN(priceForRepairing) AS MinimalPrice, MAX(priceForRepairing) AS MaximalPrice
-                FROM Car;";
-
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                using (SQLiteDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        result.AppendLine($"Overall Minimal Price: {reader["MinimalPrice"]}, {Environment.NewLine}" +
-                                          $"Overall Maximal Price: {reader["MaximalPrice"]}");
-                    }
-                }
-            }
-
-            return result.ToString();
-        }
